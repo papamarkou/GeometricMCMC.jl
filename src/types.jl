@@ -21,20 +21,22 @@ type Model
     instance.nPars = nPars
     
     instance.data = data
-    
-    instance.logPrior = logPrior
-    instance.logLikelihood = logLikelihood
+   
+    instance.logPrior = (pars::Vector{Float64} -> logPrior(pars, nPars, data))
+    instance.logLikelihood =
+      (pars::Vector{Float64} -> logLikelihood(pars, nPars, data))
 
-    logPosterior(pars::Int, data::Union(Array{Any}, Dict{Any, Any})) =
-      logPrior(pars, data)+logLikelihood(pars, data)
-    instance.logPosterior = logPosterior
-    instance.gradLogPosterior = gradLogPosterior
-    instance.tensor = tensor
+    instance.logPosterior = (pars::Vector{Float64} ->
+      logPrior(pars, nPars, data)+logLikelihood(pars, nPars, data))
+    instance.gradLogPosterior =
+      (pars::Vector{Float64} -> gradLogPosterior(pars, nPars, data))
+    instance.tensor = (pars::Vector{Float64} -> tensor(pars, nPars, data))
     for i = 1:size(derivTensor, 1)
-      instance.derivTensor[i]= derivTensor[i] 
+      instance.derivTensor[i]=
+        (pars::Vector{Float64} -> derivTensor[i](pars, nPars, data))      
     end
-    
-    instance.randPrior = randPrior
+   
+    instance.randPrior = (() -> randPrior(nPars, data))
   
     instance
   end
@@ -48,15 +50,16 @@ type Model
         
     instance.data = data
     
-    instance.logPrior = logPrior
-    instance.logLikelihood = logLikelihood
+    instance.logPrior = (pars::Vector{Float64} -> logPrior(pars, nPars, data))
+    instance.logLikelihood =
+      (pars::Vector{Float64} -> logLikelihood(pars, nPars, data))
 
-    logPosterior(pars::Int, data::Union(Array{Any}, Dict{Any, Any})) =
-      logPrior(pars, data)+logLikelihood(pars, data)
-    instance.logPosterior = logPosterior
-    instance.gradLogPosterior = gradLogPosterior
-
-    instance.randPrior = randPrior
+    instance.logPosterior = (pars::Vector{Float64} ->
+      logPrior(pars, nPars, data)+logLikelihood(pars, nPars, data))
+    instance.gradLogPosterior =
+      (pars::Vector{Float64} -> gradLogPosterior(pars, nPars, data))
+   
+    instance.randPrior = (() -> randPrior(nPars, data))
     
     instance
   end

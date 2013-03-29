@@ -7,7 +7,7 @@ module GeometricMCMC
   include("types.jl")
   #include("mh.jl")
   include("logitNormalPrior.jl")
-  #include("data.jl")
+  include("../test/data.jl")
   
   export
     # Types
