@@ -7,7 +7,7 @@ end
 
 function logLikelihood(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
   XPars = data["X"]*pars
-  return XPars'*data["y"]-sum(log(1+exp(XPars)))
+  return (XPars'*data["y"]-sum(log(1+exp(XPars))))[1]
 end
 
 function gradLogPosterior(pars::Vector{Float64}, nPars::Int,

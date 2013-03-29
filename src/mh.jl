@@ -1,79 +1,71 @@
-function mh(model::Model, opts::MhOptions)
-  mcmc = Array(opts.mcmc.nPostBurnin, model.nPars)
+function mh(model::Model, opts::MhOpts)
+  mcmc = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
+  z = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
+  proposalSd = ones(model.nPars, 1)
+  proposed = zeros(model.nPars, 1)
+  accepted = zeros(model.nPars, 1)
+  acceptanceRatio = Array(Float64, model.nPars, 1)
 
-  parameters = model.samplePrior();
-  logPosterior = model.logPosterior(parameters);
+  println("Running burn-in iterations...")
+  pars = model.randPrior()
+  currentLogPosterior = model.logPosterior(pars)
+  currentGradLogPosterior = model.gradLogPosterior(pars)
 
-%% Calculate initial values of z
-gradLogPosterior = model.gradLogPosterior(parameters);
-Z = zeros(nPosteriorSamples, model.np);
-
-%% Perform Metropolis-Hastings iterations
-fprintf('Initialisation completed...\n\nRunning burn-in iterations...\n');
-[proposed, accepted, acceptanceRatio] = deal(zeros(model.np, 1));
-proposalSd = ones(model.np, 1);
-
-for i = 1:nMcmc
-  for j = 1:model.np
-    proposedParameters = parameters;
-    proposedParameters(j) = proposedParameters(j)+randn*proposalSd(j);
-    
-    proposed(j) = proposed(j)+1;
-    
-    % Calculate proposed joint log posterior based on proposed parameters
-    proposedLogPosterior = model.logPosterior(proposedParameters);
-    
-    % Calculate proposed grad of log posterior based on proposed parameters
-    proposedGradLogPosterior = model.gradLogPosterior(proposedParameters);
-    
-    % Accept according to ratio
-    ratio = proposedLogPosterior-logPosterior;
+  for i = 1:opts.mcmc.n
+    for j = 1:model.nPars
+      proposed[j] = proposed[j]+1
+          
+      proposedParameters = copy(pars)
+      proposedParameters[j] = proposedParameters[j]+randn()*proposalSd[j]
+      proposedLogPosterior = model.logPosterior(proposedParameters)
+      proposedGradLogPosterior = model.gradLogPosterior(proposedParameters)
+   
+      ratio = proposedLogPosterior-currentLogPosterior
+  
+      if ratio > 0 || (ratio > log(rand()))
+        accepted[j] = accepted[j]+1
         
-    if ratio > 0 || (ratio > log(rand))
-      parameters = proposedParameters;
-            
-      logPosterior = proposedLogPosterior;
-      gradLogPosterior = proposedGradLogPosterior;
-      
-      accepted(j) = accepted(j)+1;
-    end        
-  end
+        pars = copy(proposedParameters)           
+        currentLogPosterior = copy(proposedLogPosterior)
+        currentGradLogPosterior = copy(proposedGradLogPosterior)
+      end        
+    end
+
+    if i > opts.mcmc.nBurnin
+      mcmc[i-opts.mcmc.nBurnin, :] = pars
+      z[i-opts.mcmc.nBurnin, :] = -currentGradLogPosterior/2
+    end
   
-  % Save samples if required
-  if i > nBurnIn
-    mcmc(i-nBurnIn, :) = parameters;
-    Z(i-nBurnIn, :) = -gradLogPosterior/2;
-  end
-  
-  if mod(i, monitorRate) == 0          
-    % Adjust proposal width during burn-in phase
-    if i < nBurnIn
-      for j = 1:model.np
-        acceptanceRatio(j) = accepted(j)/proposed(j);
+    if mod(i, opts.mcmc.monitorRate) == 0
+      if i < opts.mcmc.nBurnin
+        for j = 1:model.nPars
+          acceptanceRatio[j] = accepted[j]/proposed[j]
             
-        if acceptanceRatio(j) > 0.6
-          proposalSd(j) = proposalSd(j)*(1+proposalWitdthCorrection);
-        elseif acceptanceRatio(j) < 0.2
-          proposalSd(j) = proposalSd(j)*(1-proposalWitdthCorrection);
-        end        
+          if acceptanceRatio[j] > 0.6
+            proposalSd[j] = proposalSd[j]*(1+opts.widthCorrection)
+          elseif acceptanceRatio[j] < 0.2
+            proposalSd[j] = proposalSd[j]*(1-opts.widthCorrection)
+          end        
+        end
       end
-    end
     
-    fprintf('Iteration %u of %u:\n', i, nMcmc);
-    for j = 1:model.np
-      fprintf('  Parameter %u: %.2f%% acceptance ratio\n', ...
-        j, 100*accepted(j)/proposed(j));
+      println("Iteration $i of $(opts.mcmc.n):")
+      for j = 1:model.nPars
+        println("  Parameter $j: ", round(100*accepted[j]/proposed[j], 2),
+        "% acceptance ratio")
+      end
+      proposed = zeros(model.nPars, 1)
+      accepted = zeros(model.nPars, 1)
     end
-    [proposed, accepted] = deal(zeros(model.np, 1));
+
+    if i == opts.mcmc.nBurnin
+      println("Burn-in completed...\n\nRunning post burn-in MCMC...");
+    end
   end
 
-  if i == nBurnIn
-    fprintf('Burn-in completed...\n\nRunning post burn-in MCMC...\n');
-  end
-end
-
-output = cell(1, 3);
-output{1} = mcmc;
-output{2} = Z;
-output{3} = [nMcmc nBurnIn proposalWitdthCorrection];
+  output = cell(3)
+  output[1] = mcmc
+  output[2] = z
+  
+  return output
 end

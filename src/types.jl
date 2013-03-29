@@ -66,7 +66,7 @@ type Model
 end
 
 type McmcOpts
-  nMcmc::Int
+  n::Int
   nBurnin::Int
   nPostBurnin::Int
   

@@ -15,32 +15,25 @@ end
 y = swiss[:, end];
 
 # Create data dictionary
-data = {"X"=>X, "y"=>y, "priorVar"=>100., "nPars"=>nPars};
+data = {"X"=>X, "y"=>y, "priorVar"=>100.};
 
 # Create Model instance
 model =
   Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
 
-options.initialParameters = zeros(1, model.np);
+# Create instance mhOpts of Metropolis-Hastings options
+mhOpts = MhOpts(55000, 5000, 0.1);
 
-options.nMcmc = 55000;
-options.nBurnIn = 5000;
+# Run Metropolis-Hastings simulation
+mhOut = mh(model, mhOpts);
 
-options.proposalWidthCorrection = 0.1;
-options.monitorRate = 100;
-
-metropolisOutput = metropolis(model, options);
-B = metropolisOutput{1};
-Z = metropolisOutput{2};
-metropolisParameters = metropolisOutput{3};
-
-%% Compute ZV-RMHMC estimates based on linear polynomial
+# Compute ZV-RMHMC estimates based on linear polynomial
 [BZvL, polCoefL] = linearZv(B, Z);
 
-%% Compute ZV-RMHMC estimates based on quadratic polynomial
+# Compute ZV-RMHMC estimates based on quadratic polynomial
 [BZvQ, polCoefQ] = quadraticZv(B, Z);
 
-%% Save numerical output
+# Save output in file
 save(['./examples/logitNormalPriorSwiss/output/' ...
   'logitNormalPriorSwissMetropolis.' ...
   'nMcmc' num2str(metropolisParameters(1)) '.' ...
