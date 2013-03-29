@@ -1,18 +1,19 @@
 type Model
-  nPars::Uint
+  nPars::Int
   
   data::Union(Array{Any}, Dict{Any, Any})
 
   logPrior::Function
   logLikelihood::Function
 
+  logPosterior::Function
   gradLogPosterior::Function
   tensor::Function
   derivTensor::Array{Function}
 
   randPrior::Function
   
-  Model(nPars::Uint, data::Union(Array{Any}, Dict{Any, Any}), 
+  Model(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}), 
     logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
     tensor::Function, derivTensor::Array{Function}, randPrior::Function) = begin
     instance = new()
@@ -23,7 +24,10 @@ type Model
     
     instance.logPrior = logPrior
     instance.logLikelihood = logLikelihood
-   
+
+    logPosterior(pars::Int, data::Union(Array{Any}, Dict{Any, Any})) =
+      logPrior(pars, data)+logLikelihood(pars, data)
+    instance.logPosterior = logPosterior
     instance.gradLogPosterior = gradLogPosterior
     instance.tensor = tensor
     for i = 1:size(derivTensor, 1)
@@ -35,7 +39,7 @@ type Model
     instance
   end
 
-  Model(nPars::Uint, data::Union(Array{Any}, Dict{Any, Any}),
+  Model(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}),
     logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
     randPrior::Function) = begin
     instance = new()
@@ -47,6 +51,9 @@ type Model
     instance.logPrior = logPrior
     instance.logLikelihood = logLikelihood
 
+    logPosterior(pars::Int, data::Union(Array{Any}, Dict{Any, Any})) =
+      logPrior(pars, data)+logLikelihood(pars, data)
+    instance.logPosterior = logPosterior
     instance.gradLogPosterior = gradLogPosterior
 
     instance.randPrior = randPrior
@@ -56,13 +63,13 @@ type Model
 end
 
 type McmcOpts
-  nMcmc::Uint
-  nBurnin::Uint
-  nPostBurnin::Uint
+  nMcmc::Int
+  nBurnin::Int
+  nPostBurnin::Int
   
-  monitorRate::Uint
+  monitorRate::Int
   
-  McmcOpts(nMcmc::Uint, nBurnin::Uint, monitorRate::Uint) = begin
+  McmcOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int) = begin
     instance = new()
     
     instance.n = nMcmc
@@ -74,7 +81,7 @@ type McmcOpts
     instance
   end
   
-  McmcOpts(nMcmc::Uint, nBurnin::Uint) = begin
+  McmcOpts(nMcmc::Int, nBurnin::Int) = begin
     instance = new()
     
     instance.n = nMcmc
@@ -92,8 +99,8 @@ type MhOpts
  
   widthCorrection::Float64
   
-  MhOpts(nMcmc::Uint, nBurnin::Uint, monitorRate::Uint, 
-    widthCorrection::Float64) = begin
+  MhOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, widthCorrection::Float64) =
+  begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
@@ -103,7 +110,7 @@ type MhOpts
     instance
   end
   
-  MhOpts(nMcmc::Uint, nBurnin::Uint, widthCorrection::Float64) = begin
+  MhOpts(nMcmc::Int, nBurnin::Int, widthCorrection::Float64) = begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin)

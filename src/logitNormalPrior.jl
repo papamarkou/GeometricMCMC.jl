@@ -15,6 +15,6 @@ function gradLogPosterior(pars::Vector{Float64}, data::Dict{Any, Any})
     -pars/data["priorVar"])
 end
 
-function randPrior()
+function randPrior(data::Dict{Any, Any})
   return rand(Normal(0.0, sqrt(data["priorVar"])), data["nPars"])
 end
