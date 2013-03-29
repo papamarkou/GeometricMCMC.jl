@@ -1,21 +1,20 @@
 type Model
   nPars::Uint
   
-  data::Array{Any}
+  data::Union(Array{Any}, Dict{Any, Any})
 
   logPrior::Function
   logLikelihood::Function
-  
-  logPosterior::Function
+
   gradLogPosterior::Function
   tensor::Function
   derivTensor::Array{Function}
 
   randPrior::Function
   
-  Model(nPars::Uint, data::Array{Any}, logPrior::Function, 
-    logLikelihood::Function, gradLogPosterior::Function, tensor::Function, 
-    derivTensor::Array{Function}, randPrior::Function) = begin
+  Model(nPars::Uint, data::Union(Array{Any}, Dict{Any, Any}), 
+    logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
+    tensor::Function, derivTensor::Array{Function}, randPrior::Function) = begin
     instance = new()
     
     instance.nPars = nPars
@@ -24,20 +23,21 @@ type Model
     
     instance.logPrior = logPrior
     instance.logLikelihood = logLikelihood
-    
-    instance.logPosterior = instance.logLikelihood+instance.logPrior
+   
     instance.gradLogPosterior = gradLogPosterior
     instance.tensor = tensor
     for i = 1:size(derivTensor, 1)
       instance.derivTensor[i]= derivTensor[i] 
     end
+    
+    instance.randPrior = randPrior
   
     instance
   end
 
-  Model(nPars::Uint, data::Array{Any}, logPrior::Function, 
-    logLikelihood::Function, gradLogPosterior::Function, randPrior::Function) =
-    begin
+  Model(nPars::Uint, data::Union(Array{Any}, Dict{Any, Any}),
+    logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
+    randPrior::Function) = begin
     instance = new()
 
     instance.nPars = nPars
@@ -47,9 +47,10 @@ type Model
     instance.logPrior = logPrior
     instance.logLikelihood = logLikelihood
 
-    instance.logPosterior = instance.logLikelihood+instance.logPrior
     instance.gradLogPosterior = gradLogPosterior
-  
+
+    instance.randPrior = randPrior
+    
     instance
   end
 end

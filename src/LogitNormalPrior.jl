@@ -1,8 +1,13 @@
-# data is a cell(3) 
+function logPrior(pars::Vector{Float64}, data::Dict{Any, Any})
+  return (-dot(pars,pars)/data["priorVar"]
+    -data["nPars"]*log(2*pi*data["priorVar"]))/2
+end
 
-function logPrior(pars::Vector{Float64}, data::Array{Number})
-  return sum(-pars.^2/(2*obj.a)-log(2*pi*obj.a)/2)
-  return -dot(pars, pars)/(2*data[3])
+function = logLikelihood(pars::Vector{Float64}, data::Dict{Any, Any})
+  XPars = pars*data["X"]
+  return data["y"]*XPars
+  Xb = obj.X*b;
+  return Xb'*obj.y-sum(log(1+exp(Xb)));
 end
 
 classdef LogitNormalPrior

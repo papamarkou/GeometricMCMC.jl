@@ -1,22 +1,26 @@
 # Create design matrix X and response variable y from swiss data array
 # swiss = readdlm("GeometricMCMC/examples/data/swiss.txt", ' ');
-y = swiss[:, end];
-
 covariates = swiss[:, 1:end-1];
 nData, nPars = size(covariates);
+nPars = convert(Uint, nPars);
 
-mean(covariates, 1)
-std(covariates, 1)
-data = (data-repmat(mean(data), n, 1))./repmat(std(data), n, 1);
+covariates = (bsxfun(-, covariates, mean(covariates, 1))
+  ./repmat(std(covariates, 1), nData, 1));
 
 polynomialOrder = 1;
-X = zeros(n, d*polynomialOrder);
+X = zeros(nData, nPars*polynomialOrder);
 for i = 1:polynomialOrder
-  X(:, ((i-1)*d+1):i*d) = data.^i;
+  X[:, ((i-1)*nPars+1):i*nPars] = covariates.^i;
 end
 
-%% Run logitNormalPriorSwissMetropolis
-model = LogitNormalPrior(X, y, 100);
+y = swiss[:, end];
+
+# Create data dictionary
+data = {"X"=>X, "y"=>y, "priorVar"=>100., "nPars"=>nPars};
+
+# Create Model instance
+model =
+  Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
 
 options.initialParameters = zeros(1, model.np);
 

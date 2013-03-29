@@ -1,13 +1,13 @@
 module GeometricMCMC
-  using Base
-
+  #using Base
+  
   require("Distributions")
   using Distributions
 
   include("types.jl")
-  include("mh.jl")
-  include("LogitNormalPrior.jl")
-  include("data.jl")
+  #include("mh.jl")
+  include("logitNormalPrior.jl")
+  #include("data.jl")
   
   export
     # Types
