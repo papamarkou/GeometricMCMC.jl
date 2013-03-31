@@ -25,18 +25,10 @@ model =
 mhOpts = MhOpts(55000, 5000, 0.1);
 
 # Run Metropolis-Hastings simulation
-mhOut = mh(model, mhOpts);
+mcmc, z = mh(model, mhOpts);
 
-# Compute ZV-RMHMC estimates based on linear polynomial
-[BZvL, polCoefL] = linearZv(B, Z);
+# Compute ZV-MH mean estimators based on linear polynomial
+linearZvMcmc, linearCoef = linearZv(mcmc, z);
 
-# Compute ZV-RMHMC estimates based on quadratic polynomial
-[BZvQ, polCoefQ] = quadraticZv(B, Z);
-
-# Save output in file
-save(['./examples/logitNormalPriorSwiss/output/' ...
-  'logitNormalPriorSwissMetropolis.' ...
-  'nMcmc' num2str(metropolisParameters(1)) '.' ...
-  'nBurnIn' num2str(metropolisParameters(2)) '.' ...
-  'widthCorrection' num2str(metropolisParameters(3)) '.mat'], ...
-  'B', 'BZvL', 'BZvQ')
+# Compute ZV-MH mean estimators based on quadratic polynomial
+quadraticZvMcmc, quadraticCoef = quadraticZv(mcmc, z);

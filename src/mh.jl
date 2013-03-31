@@ -1,3 +1,4 @@
+# Function for running Metropolis-Hastings algorithm
 function mh(model::Model, opts::MhOpts)
   mcmc = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
   z = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
@@ -63,9 +64,5 @@ function mh(model::Model, opts::MhOpts)
     end
   end
 
-  output = cell(3)
-  output[1] = mcmc
-  output[2] = z
-  
-  return output
+  return mcmc, z
 end
