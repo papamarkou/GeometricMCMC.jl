@@ -6,7 +6,7 @@ module GeometricMCMC
 
   include("types.jl")
   include("mh.jl")
-  #include("mala.jl")
+  include("mala.jl")
   #include("smmala.jl")
   #include("mmala.jl")
   #include("hmc.jl")
@@ -17,11 +17,11 @@ module GeometricMCMC
   include("../test/data.jl")
   
   export
-    # Types
+    ## Types
     Model
     MhOpts
     
-    # MCMC functions
+    ## MCMC functions
     mh # Metropolis-Hastings (MH)
     mala # Metropolis adjusted Langevin algorithm (MALA)
     smmala # Simplified Manifold MALA (SMMALA)
@@ -29,11 +29,11 @@ module GeometricMCMC
     hmc # Hamiltonian Monte Carlo (HMC)
     rmhmc # Riemannian Manifold HMC (RMHMC)
     
-    # Functions for calculating zero-variance estimators
+    ## Functions for calculating zero-variance estimators
     linearZv # ZV-MCMC using linear polynomial
     quadraticZv # ZV-MCMC using quadratic polynomial
     
-    # Numeric arrays holding datasets used in the examples
-    swiss # Swiss banknotes data
+    ## Numeric arrays holding datasets used in the examples
+    swiss # Swiss banknote data
     vaso # Vaso constriction data
 end

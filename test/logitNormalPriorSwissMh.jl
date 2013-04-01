@@ -1,3 +1,6 @@
+## Run Metropolis-Hastings using a Bayesian logit model with a normal Prior 
+## N(0, aI) on the Swiss banknote data
+
 # Create design matrix X and response variable y from swiss data array
 # swiss = readdlm("../test/swiss.txt", ' ');
 covariates = swiss[:, 1:end-1];
@@ -15,7 +18,7 @@ end
 y = swiss[:, end];
 
 # Create data dictionary
-data = {"X"=>X, "y"=>y, "priorVar"=>100.};
+data = {"X"=>X, "y"=>y, "priorVar"=>100., "nData"=>nData};
 
 # Create Model instance
 model =

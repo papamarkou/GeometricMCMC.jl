@@ -9,13 +9,13 @@ type Model
   logPosterior::Function
   gradLogPosterior::Function
   tensor::Function
-  derivTensor::Array{Function}
+  derivTensor::Function
 
   randPrior::Function
   
   Model(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}), 
     logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
-    tensor::Function, derivTensor::Array{Function}, randPrior::Function) = begin
+    tensor::Function, derivTensor::Function, randPrior::Function) = begin
     instance = new()
     
     instance.nPars = nPars
@@ -31,10 +31,8 @@ type Model
     instance.gradLogPosterior =
       (pars::Vector{Float64} -> gradLogPosterior(pars, nPars, data))
     instance.tensor = (pars::Vector{Float64} -> tensor(pars, nPars, data))
-    for i = 1:size(derivTensor, 1)
-      instance.derivTensor[i]=
-        (pars::Vector{Float64} -> derivTensor[i](pars, nPars, data))      
-    end
+    instance.derivTensor=
+      (pars::Vector{Float64} -> derivTensor(pars, nPars, data))
    
     instance.randPrior = (() -> randPrior(nPars, data))
   
@@ -119,6 +117,60 @@ type MhOpts
     instance.mcmc = McmcOpts(nMcmc, nBurnin)
     
     instance.widthCorrection = widthCorrection
+    
+    instance
+  end
+end
+
+type MalaOpts
+  mcmc::McmcOpts
+
+  setDriftStep::Function
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, driftStep::Float64) =
+  begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, driftStep::Float64) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+   
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, setDriftStep::Function) =
+  begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, setDriftStep::Function) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
     
     instance
   end
