@@ -9,7 +9,7 @@ module GeometricMCMC
   include("mh.jl")
   include("mala.jl")
   include("smmala.jl")
-  #include("mmala.jl")
+  include("mmala.jl")
   #include("hmc.jl")
   #include("rmhmc.jl")
   include("linearZv.jl")
@@ -21,6 +21,9 @@ module GeometricMCMC
     ## Types
     Model
     MhOpts
+    MalaOpts
+    SmmalaOpts
+    MmalaOpts
     
     ## Auxiliary step functions
     setStep # Generic step function

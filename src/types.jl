@@ -201,3 +201,5 @@ type MalaOpts
 end
 
 typealias SmmalaOpts MalaOpts
+
+typealias MmalaOpts MalaOpts

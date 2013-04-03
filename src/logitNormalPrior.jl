@@ -16,10 +16,6 @@ function gradLogPosterior(pars::Vector{Float64}, nPars::Int,
     -pars/data["priorVar"])
 end
 
-function randPrior(nPars::Int, data::Dict{Any, Any})
-  return rand(Normal(0.0, sqrt(data["priorVar"])), nPars)
-end
-
 function tensor(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
   p = 1./(1+exp(-data["X"]*pars))
   return ((data["X"]'.*repmat((p.*(1-p))', nPars, 1))*data["X"]
@@ -41,4 +37,8 @@ function derivTensor(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
   end
   
   return output
+end
+
+function randPrior(nPars::Int, data::Dict{Any, Any})
+  return rand(Normal(0.0, sqrt(data["priorVar"])), nPars)
 end
