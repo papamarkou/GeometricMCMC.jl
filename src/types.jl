@@ -39,6 +39,30 @@ type Model
     instance
   end
 
+  Model(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}), 
+    logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
+    tensor::Function, randPrior::Function) = begin
+    instance = new()
+    
+    instance.nPars = nPars
+    
+    instance.data = data
+   
+    instance.logPrior = (pars::Vector{Float64} -> logPrior(pars, nPars, data))
+    instance.logLikelihood =
+      (pars::Vector{Float64} -> logLikelihood(pars, nPars, data))
+
+    instance.logPosterior = (pars::Vector{Float64} ->
+      logPrior(pars, nPars, data)+logLikelihood(pars, nPars, data))
+    instance.gradLogPosterior =
+      (pars::Vector{Float64} -> gradLogPosterior(pars, nPars, data))
+    instance.tensor = (pars::Vector{Float64} -> tensor(pars, nPars, data))
+   
+    instance.randPrior = (() -> randPrior(nPars, data))
+  
+    instance
+  end
+
   Model(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}),
     logPrior::Function, logLikelihood::Function, gradLogPosterior::Function,
     randPrior::Function) = begin
@@ -175,3 +199,5 @@ type MalaOpts
     instance
   end
 end
+
+typealias SmmalaOpts MalaOpts

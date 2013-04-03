@@ -8,7 +8,7 @@ module GeometricMCMC
   include("setStep.jl")
   include("mh.jl")
   include("mala.jl")
-  #include("smmala.jl")
+  include("smmala.jl")
   #include("mmala.jl")
   #include("hmc.jl")
   #include("rmhmc.jl")
