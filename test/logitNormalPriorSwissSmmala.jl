@@ -34,8 +34,15 @@ setDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int,
 # Create instance malaOpts of SMMALA options
 smmalaOpts = SmmalaOpts(55000, 5000, setDriftStep);
 
+# Run SMMALA
+mcmc = Array(Float64, nPars, nPars)
+z = Array(Float64, nPars, nPars)
+linearZvMcmc = Array(Float64, nPars, nPars)
+linearCoef = Array(Float64, nPars, nPars)
+quadraticZvMcmc = Array(Float64, nPars, nPars)
+quadraticCoef = Array(Float64, convert(Int, nPars*(nPars+3)/2), nPars)
+
 try
-  # Run SMMALA
   mcmc, z = smmala(model, smmalaOpts);
   
   # Compute ZV-SMMALA mean estimators based on linear polynomial
