@@ -203,3 +203,60 @@ end
 typealias SmmalaOpts MalaOpts
 
 typealias MmalaOpts MalaOpts
+
+type HmcOpts
+  mcmc::McmcOpts
+
+  nLeaps::Int
+  setLeapStep::Function
+  
+  massMatrix::Array{Float64, 2}
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
+    leapStep::Float64, massMatrix::Array{Float64, 2}) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, driftStep::Float64) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+   
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, setDriftStep::Function) =
+  begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+    
+    instance
+  end
+  
+  MalaOpts(nMcmc::Int, nBurnin::Int, setDriftStep::Function) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+    
+    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+    
+    instance
+  end
+end
