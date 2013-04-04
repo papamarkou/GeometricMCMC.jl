@@ -1,65 +1,34 @@
-function output = hmc(model, options)
-% hmc: function for running HMC for a given model.
-
-% Written by Theodore Papamarkou.
-% (c) UCL, Department of Statistical Science. All rights reserved.
-
-%% Get user options
-nMcmc = options.nMcmc;
-nBurnIn = options.nBurnIn;
-nPosteriorSamples = nMcmc-nBurnIn;
-
-massMatrix = options.massMatrix;
-nLeap = options.nLeap;
-leapStep = options.leapStep;
-
-monitorRate = options.monitorRate;
-
-if mod(nBurnIn, monitorRate)~=0
-  error('Monitor rate must be a divisor of number of burn-in steps');
-end
-
-if mod(nMcmc, monitorRate)~=0
-  error('Monitor rate must be a divisor of number of MCMC steps');
-end
-
-%% Pre-allocate memory
-B = zeros(nPosteriorSamples, model.np);
-
-%% Calculate joint log posterior for initial parameters
-parameters = model.samplePrior();
-logPosterior = model.logPosterior(parameters);
-
-%% Calculate initial values of z
-gradLogPosterior = model.gradLogPosterior(parameters);
-Z = zeros(nPosteriorSamples, model.np);
-
-%% Perform HMC iterations
-fprintf('Initialisation completed...\n\nRunning burn-in iterations...\n');
-[proposed, accepted] = deal(0);
-
-i = 1;
-while (i <= nMcmc)     
-  proposedParameters = parameters;
-  proposed = proposed+1;
-
-  % Sample momentum
-  proposedMomentum = (randn(1, model.np)*massMatrix)';
+# Function for running Hamiltonian Monte Carlo (HMC)
+function hmc(model::Model, opts::HmcOpts)
+  mcmc = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
+  z = Array(Float64, opts.mcmc.nPostBurnin, model.nPars)
+  proposed, accepted = 0., 0.
   
-  % Calculate current H value
-  hamiltonian  = -logPosterior+...
-    (proposedMomentum'*(massMatrix\proposedMomentum))/2;
+  println("Running burn-in iterations...")
+
+  currentPars = model.randPrior()
+  currentLogPosterior = model.logPosterior(currentPars)
+  gradLogPosterior = model.gradLogPosterior(currentPars)
+  leapStep = opts.leapStep
+
+  for i = 1:opts.mcmc.n
+    proposed += 1  
+  proposedParameters = currentPars;
+
+  proposedMomentum = (randn(1, model.np)*opts.mass)';
+ 
+  hamiltonian  = -currentLogPosterior+...
+    (proposedMomentum'*(opts.mass\proposedMomentum))/2;
   
-  randomSteps = ceil(rand*nLeap);
-        
-  % Perform leapfrog steps
+  randomSteps = ceil(rand*opts.nLeaps);
+       
   proposedGradLogPosterior = gradLogPosterior;
   for j = 1:randomSteps
     proposedMomentum = proposedMomentum+...
       (leapStep/2)*proposedGradLogPosterior;
     
     %proposedParameters = proposedParameters+...
-    %  leapStep*(massMatrix\proposedMomentum);
+    %  leapStep*(opts.mass\proposedMomentum);
     proposedParameters = proposedParameters+...
       leapStep*proposedMomentum;  
     
@@ -68,20 +37,17 @@ while (i <= nMcmc)
       (leapStep/2)*proposedGradLogPosterior;
   end
 
-  % Calculate proposed joint log posterior based on proposed parameters
   proposedLogPosterior = model.logPosterior(proposedParameters);
-  
-  % Calculate Hamiltonian based on proposed parameters
+ 
   proposedHamiltonian = -proposedLogPosterior+...
-    (proposedMomentum'*(massMatrix\proposedMomentum))/2;
-       
-  % Accept according to ratio
+    (proposedMomentum'*(opts.mass\proposedMomentum))/2;
+      
   ratio = hamiltonian-proposedHamiltonian;
 
   if ratio > 0 || (ratio > log(rand))
-    parameters = proposedParameters;
+    currentPars = proposedParameters;
     
-    logPosterior = proposedLogPosterior;
+    currentLogPosterior = proposedLogPosterior;
     gradLogPosterior = proposedGradLogPosterior;
     
     accepted = accepted+1;
@@ -94,59 +60,59 @@ while (i <= nMcmc)
     
     if i <= 0.1*nBurnIn
       if acceptanceRatio < 0.1
-        leapStep = options.leapStep01;
+        leapStep = opts.leapStep01;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep02;
+        leapStep = opts.leapStep02;
       end
     elseif i <= 0.15*nBurnIn
       if acceptanceRatio < 0.15
-        leapStep = options.leapStep02;
+        leapStep = opts.leapStep02;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep03;
+        leapStep = opts.leapStep03;
       end
     elseif i <= 0.2*nBurnIn
       if acceptanceRatio < 0.2
-        leapStep = options.leapStep03;
+        leapStep = opts.leapStep03;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep04;
+        leapStep = opts.leapStep04;
       end
     elseif i <= 0.25*nBurnIn
       if acceptanceRatio < 0.25
-        leapStep = options.leapStep04;
+        leapStep = opts.leapStep04;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep05;
+        leapStep = opts.leapStep05;
       end
     elseif i <= 0.3*nBurnIn
       if acceptanceRatio < 0.3
-        leapStep = options.leapStep05;
+        leapStep = opts.leapStep05;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep06;
+        leapStep = opts.leapStep06;
       end
     elseif i <= 0.35*nBurnIn
       if acceptanceRatio < 0.35
-        leapStep = options.leapStep06;
+        leapStep = opts.leapStep06;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep07;
+        leapStep = opts.leapStep07;
       end
     elseif i <= 0.4*nBurnIn
       if acceptanceRatio < 0.4
-        leapStep = options.leapStep07;
+        leapStep = opts.leapStep07;
       elseif 0.9 <= acceptanceRatio
-        leapStep = options.leapStep08;
+        leapStep = opts.leapStep08;
       end
     elseif i <= 0.45*nBurnIn
       if acceptanceRatio < 0.5
-        leapStep = options.leapStep08;
+        leapStep = opts.leapStep08;
       elseif 0.85 <= acceptanceRatio
-        leapStep = options.leapStep09;
+        leapStep = opts.leapStep09;
       end
     elseif i <= 0.5*nBurnIn
       if acceptanceRatio < 0.1
         error('Aborted: low acceptance ratio during burn-in');
       elseif acceptanceRatio < 0.5
-        leapStep = options.leapStep09;
+        leapStep = opts.leapStep09;
       elseif 0.8 <= acceptanceRatio
-        leapStep = options.leapStep;
+        leapStep = opts.leapStep;
       end
     elseif (0.7*nBurnIn <= i) && (i < 0.75*nBurnIn)
       if acceptanceRatio < 0.1
@@ -171,17 +137,12 @@ while (i <= nMcmc)
     
     [proposed, accepted] = deal(0);
   end
-  
-  % Save samples if required
+ 
   if i > nBurnIn
-    B(i-nBurnIn,:) = parameters;
-    Z(i-nBurnIn,:) = -gradLogPosterior/2;
+    mcmc(i-nBurnIn,:) = currentPars;
+    z(i-nBurnIn,:) = -gradLogPosterior/2;
   end
-  
-  i = i+1;
 end
 
-output = cell(1, 3);
-output{1} = B;
-output{2} = Z;
-output{3} = [nMcmc nBurnIn nLeap leapStep];
+  return mcmc, z
+end

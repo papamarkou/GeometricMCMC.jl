@@ -210,53 +210,67 @@ type HmcOpts
   nLeaps::Int
   setLeapStep::Function
   
-  massMatrix::Array{Float64, 2}
+  mass::Array{Float64, 2}
   
-  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
+  HmcOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
     leapStep::Float64, massMatrix::Array{Float64, 2}) = begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
     
-    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
-      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> leapStep)
+    
+    instance.mass = mass
     
     instance
   end
   
-  MalaOpts(nMcmc::Int, nBurnin::Int, driftStep::Float64) = begin
+  HmcOpts(nMcmc::Int, nBurnin::Int, nLeaps::Int, leapStep::Float64, 
+    mass::Array{Float64, 2}) = begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin)
-   
-    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
-      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> driftStep)
+    
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> leapStep)
+    
+    instance.mass = mass
     
     instance
   end
   
-  MalaOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, setDriftStep::Function) =
-  begin
+  HmcOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
+    setLeapStep::Function, mass::Array{Float64, 2}) = begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
     
-    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64,
       nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
-      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
-    
+      setLeapStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+
+    instance.mass = mass
+      
     instance
   end
   
-  MalaOpts(nMcmc::Int, nBurnin::Int, setDriftStep::Function) = begin
+  HmcOpts(nMcmc::Int, nBurnin::Int, nLeaps::Int, setLeapStep::Function, 
+    mass::Array{Float64, 2}) = begin
     instance = new()
     
     instance.mcmc = McmcOpts(nMcmc, nBurnin)
     
-    instance.setDriftStep = ((currentIter::Int, acceptanceRatio::Float64, 
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64,
       nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
-      setDriftStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
-    
+      setLeapStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+
+    instance.mass = mass
+      
     instance
   end
 end
