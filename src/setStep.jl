@@ -72,7 +72,7 @@ function setStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int,
       currentStep
     end
   elseif i <= 0.5*nBurnin
-    if acceptanceRatio < 0.1
+    if acceptanceRatio < lowerRatio[10]
       throw("Aborted: low acceptance ratio during burn-in")
     elseif acceptanceRatio < lowerRatio[9]
       steps[10]
@@ -123,8 +123,8 @@ setMalaDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int,
   currentStep::Float64, steps::Vector{Float64}, malaLowerRatio, malaUpperRatio)
 
 # Function for adjusting SMMALA drift step
-smmalaLowerRatio = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.1]
-smmalaUpperRatio = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.85, 0.8, 0.9]
+smmalaLowerRatio = copy(malaLowerRatio)
+smmalaUpperRatio = copy(malaUpperRatio)
 
 setSmmalaDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, 
   currentStep::Float64, steps::Vector{Float64}) =
@@ -133,8 +133,8 @@ setSmmalaDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int,
   smmalaUpperRatio)
 
 # Function for adjusting MMALA drift step
-mmalaLowerRatio = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.1]
-mmalaUpperRatio = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.85, 0.8, 0.9]
+mmalaLowerRatio = copy(malaLowerRatio)
+mmalaUpperRatio = copy(malaUpperRatio)
 
 setMmalaDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, 
   currentStep::Float64, steps::Vector{Float64}) =
@@ -143,8 +143,8 @@ setMmalaDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int,
   mmalaUpperRatio)
 
 # Function for adjusting HMC leap step
-hmcLowerRatio = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.1]
-hmcUpperRatio = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.85, 0.8, 0.9]
+hmcLowerRatio = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.5, 0.1]
+hmcUpperRatio = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.85, 0.8, 0.925]
 
 setHmcLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, 
   currentStep::Float64, steps::Vector{Float64}) = 

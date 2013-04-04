@@ -32,7 +32,7 @@ setLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int,
   setHmcLeapStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, leapSteps)
 
 # Create instance malaOpts of HMC options
-hmcOpts = hmcOpts(55000, 5000, 10, setLeapStep, eye(nPars));
+hmcOpts = HmcOpts(55000, 5000, 10, setLeapStep, eye(nPars));
 
 # Run HMC
 mcmc = Array(Float64, nPars, nPars)
