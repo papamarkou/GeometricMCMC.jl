@@ -16,20 +16,18 @@ function hmc(model::Model, opts::HmcOpts)
     proposed += 1 
     
     proposedPars = copy(currentPars)
-    proposedMomentum = opts.mass'*randn(model.nPars)
-    currentHamiltonian =
-      -currentLogPosterior+(proposedMomentum'*(invMass*proposedMomentum))/2
+    momentum = opts.mass'*randn(model.nPars)
+    currentHamiltonian = -currentLogPosterior+(momentum'*(invMass*momentum))/2
     randomSteps = ceil(rand()*opts.nLeaps)
     proposedGradLogPosterior = copy(currentGradLogPosterior)
     for j = 1:randomSteps
-      proposedMomentum = proposedMomentum+(leapStep/2)*proposedGradLogPosterior
-      proposedPars = proposedPars+leapStep*proposedMomentum
+      momentum = momentum+(leapStep/2)*proposedGradLogPosterior
+      proposedPars = proposedPars+leapStep*momentum
       proposedGradLogPosterior = model.gradLogPosterior(proposedPars)
-      proposedMomentum = proposedMomentum+(leapStep/2)*proposedGradLogPosterior
+      momentum = momentum+(leapStep/2)*proposedGradLogPosterior
     end
     proposedLogPosterior = model.logPosterior(proposedPars)
-    proposedHamiltonian =
-      -proposedLogPosterior+(proposedMomentum'*(invMass*proposedMomentum))/2
+    proposedHamiltonian = -proposedLogPosterior+(momentum'*(invMass*momentum))/2
    
     ratio = (currentHamiltonian-proposedHamiltonian)[1]
     

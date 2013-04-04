@@ -11,7 +11,7 @@ module GeometricMCMC
   include("smmala.jl")
   include("mmala.jl")
   include("hmc.jl")
-  #include("rmhmc.jl")
+  include("rmhmc.jl")
   include("linearZv.jl")
   include("quadraticZv.jl")
   include("logitNormalPrior.jl")
@@ -41,7 +41,7 @@ module GeometricMCMC
     smmala # Simplified Manifold MALA (SMMALA)
     mmala # Manifold MALA (MMALA)
     hmc # Hamiltonian Monte Carlo (HMC)
-    rmhmc # Riemannian Manifold HMC (RMHMC)
+    rmhmc # Riemannian manifold HMC (RMHMC)
     
     ## Functions for calculating zero-variance estimators
     linearZv # ZV-MCMC using linear polynomial

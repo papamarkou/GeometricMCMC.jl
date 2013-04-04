@@ -274,3 +274,74 @@ type HmcOpts
     instance
   end
 end
+
+type RmhmcOpts
+  mcmc::McmcOpts
+
+  nLeaps::Int
+  setLeapStep::Function
+  
+  nNewton::Int
+  
+  RmhmcOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
+    leapStep::Float64, nNewton::Int) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> leapStep)
+    
+    instance.nNewton = nNewton
+    
+    instance
+  end
+  
+  RmhmcOpts(nMcmc::Int, nBurnin::Int, nLeaps::Int, leapStep::Float64, 
+    nNewton::Int) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+    
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64, 
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> leapStep)
+    
+    instance.nNewton = nNewton
+    
+    instance
+  end
+  
+  RmhmcOpts(nMcmc::Int, nBurnin::Int, monitorRate::Int, nLeaps::Int,
+    setLeapStep::Function, nNewton::Int) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin, monitorRate)
+    
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64,
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setLeapStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+
+    instance.nNewton = nNewton
+      
+    instance
+  end
+  
+  RmhmcOpts(nMcmc::Int, nBurnin::Int, nLeaps::Int, setLeapStep::Function, 
+    nNewton::Int) = begin
+    instance = new()
+    
+    instance.mcmc = McmcOpts(nMcmc, nBurnin)
+    
+    instance.nLeaps = nLeaps
+    instance.setLeapStep = ((currentIter::Int, acceptanceRatio::Float64,
+      nMcmc::Int, nBurnin::Int, currentStep::Float64) -> 
+      setLeapStep(currentIter, acceptanceRatio, nMcmc, nBurnin, currentStep))
+
+    instance.nNewton = nNewton
+      
+    instance
+  end
+end
