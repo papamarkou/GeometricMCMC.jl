@@ -1,5 +1,7 @@
 ## Run RMHMC using a Bayesian logit model with a normal Prior N(0, aI) on the 
 ## Swiss banknote data
+using Test
+using GeometricMCMC
 
 # Create design matrix X and response variable y from swiss data array
 # swiss = readdlm("../test/swiss.txt", ' ');

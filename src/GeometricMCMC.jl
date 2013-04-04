@@ -15,7 +15,7 @@ module GeometricMCMC
   include("linearZv.jl")
   include("quadraticZv.jl")
   include("logitNormalPrior.jl")
-  include("../test/data.jl")
+  include("data.jl")
   
   export
     ## Types
