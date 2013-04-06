@@ -31,19 +31,17 @@ More details for the geometric MCMC methods of the package can be found in [this
 
 Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions for the computation of the zero-variance (ZV) Monte Carlo Bayesian estimators, see [this publication](http://link.springer.com/article/10.1007%2Fs11222-012-9344-6).
 
-Usage
--------------------------
+## Tutorial
 
-To invoke each of the MCMC algorithms of the package, it is required to provide 
-two input arguments. The first argument is an instance of the Model type, while 
-the seconde one is an instance of the algorithm's options type.
+To invoke each of the MCMC methods of the package, it is required to provide 
+two input arguments. The first argument is an instance of the Model type, 
+defined in the package, and is common across all 6 MCMC routines. The second 
+argument is an instance of the algorithm's options type and is specific to the 
+algorithm.
 
-As an example, the logit model with Normal prior is available with the package.
+### The Model type
 
-More detailed documentation will soon be available.
-
-Future features
--------------------------
+## Future features
 
 The package is extended in order to allow usage of the MCMC routines with ODE 
 models.
