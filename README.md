@@ -47,11 +47,11 @@ algorithm.
 
 Coming soon.
 
-## Future features
+### The MCMC option types
 
 Coming soon.
 
-### The Options types
+## Future features
 
 The package is extended in order to allow usage of the MCMC routines with ODE 
 models.
