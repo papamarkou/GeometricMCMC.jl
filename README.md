@@ -1,5 +1,4 @@
-GeometricMCMC.jl
-================================
+## Overview of package's scope
 
 This package implements the following 6 MCMC algorithms:
 
@@ -32,6 +31,11 @@ More details for the geometric MCMC methods of the package can be found in [this
 Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions for the computation of the zero-variance (ZV) Monte Carlo Bayesian estimators, see [this publication](http://link.springer.com/article/10.1007%2Fs11222-012-9344-6).
 
 ## Tutorial
+
+This file serves as a tutorial explaining how to use the MCMC routines of the 
+package, as well as the `linearZV()` and `quadraticZV()` functions. Code for 
+the logit model with a Normal prior is provided to demonstrate usage and to 
+follow through the tutorial.
 
 To invoke each of the MCMC methods of the package, it is required to provide 
 two input arguments. The first argument is an instance of the Model type, 
