@@ -4,7 +4,7 @@ using Test
 using GeometricMCMC
 
 # Create design matrix X and response variable y from swiss data array
-# swiss = readdlm("../test/swiss.txt", ' ');
+swiss = readdlm("swiss.txt", ' ');
 covariates = swiss[:, 1:end-1];
 nData, nPars = size(covariates);
 
