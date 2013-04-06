@@ -34,8 +34,9 @@ Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions
 Usage
 -------------------------
 
-To invoke each of the MCMC algorithms of the package, it is required to provide two input arguments, namely an instance of the Model type and an instance of the algorithm's options type.
-The Model type includes the log-likelihood, log-prior, the gradient of the log-target, the metric tensor and its derivatives, while the options type is specific to each MCMC algorithm.
+To invoke each of the MCMC algorithms of the package, it is required to provide 
+two input arguments. The first argument is an instance of the Model type, while 
+the seconde one is an instance of the algorithm's options type.
 
 As an example, the logit model with Normal prior is available with the package.
 
@@ -44,4 +45,5 @@ More detailed documentation will soon be available.
 Future features
 -------------------------
 
-The package is extended in order to allow usage of the MCMC routines with ODE models.
+The package is extended in order to allow usage of the MCMC routines with ODE 
+models.
