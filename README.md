@@ -5,7 +5,7 @@ This package implements the following 6 MCMC algorithms:
 
 <table>
   <tr>
-    <th>ID</th><th>Julia function</th><th>MCMC algorithm</th>
+    <th></th><th>Julia function</th><th>MCMC algorithm</th>
   </tr>
   <tr>
     <td>1</td><td>mh</td><td>Metropolis-Hastings (MH)</td>
