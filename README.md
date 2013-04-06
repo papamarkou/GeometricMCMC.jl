@@ -45,7 +45,13 @@ algorithm.
 
 ### The Model type
 
+Coming soon.
+
 ## Future features
+
+Coming soon.
+
+### The Options types
 
 The package is extended in order to allow usage of the MCMC routines with ODE 
 models.
