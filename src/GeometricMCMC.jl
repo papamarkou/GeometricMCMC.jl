@@ -45,8 +45,4 @@ module GeometricMCMC
     ## Functions for calculating zero-variance estimators
     linearZv, # ZV-MCMC using linear polynomial
     quadraticZv # ZV-MCMC using quadratic polynomial
-    
-    ### Numeric arrays holding datasets used in the examples
-    #swiss, # Swiss banknote data
-    #vaso # Vaso constriction data
 end
