@@ -32,8 +32,8 @@ Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions
 
 ## Installation and usage
 
-To install the GeometricMCMC package, the typical commands of the Julia package 
-manager are used:
+To install the GeometricMCMC package, the usual commands of the Julia package 
+manager are called:
 
     Pkg.update()
     Pkg.add("GeometricMCMC")
@@ -437,5 +437,5 @@ coefficients of the underlying quadratic polynomial of the zero variance method.
 The GeometricMCMC package is being extended to include
 * Bayesian probit model,
 * models of ordinary differential equations(ODE),
-* usage of the MCMC routines when the model's functions are not known in close 
+* usage of the MCMC routines when the model's functions are not known in closed
 form.
