@@ -30,6 +30,19 @@ More details for the geometric MCMC methods of the package can be found in [this
 
 Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions for the computation of the zero-variance (ZV) Monte Carlo Bayesian estimators, see [this publication](http://link.springer.com/article/10.1007%2Fs11222-012-9344-6).
 
+## Installation and usage
+
+To install the GeometricMCMC package, the typical commands of the Julia package 
+manager are used:
+
+    Pkg.update()
+    Pkg.add("GeometricMCMC")
+
+After installation, the following typical statement is typed in the Julia 
+command prompt so as to use the GeometricMCMC package:
+
+    using GeometricMCMC
+    
 ## Tutorial
 
 This file serves as a tutorial explaining how to use the MCMC routines of the 
@@ -240,7 +253,23 @@ takes the more succinct form
 
 Apparently, the corresponding function definitions `tensor` and `derivTensor` 
 are not required if there is no intention to run RMHMC or MMALA.
-      
+
+Although the functions in the `model` instance are meant to be invoked 
+internally by the MCMC functions, they are also available at the disposal of 
+the user. For this reason, it is useful to demonstrate how they can be called. 
+Having defined `model`, `model.randPrior()`, without any input arguments, 
+samples from the prior. Any of the deterministic functions of the model are 
+called by passing to them a vector holding the values of the model's 
+paramater. For example
+
+    parsSample = model.randPrior()
+    model.logPrior(parsSample)
+    model.logLikelihood(parsSample)
+    model.logPosterior(parsSample)
+    model.gradLogPosterior(parsSample)
+    model.tensor(parsSample)
+    model.derivTensor(parsSample)
+
 ### The MCMC option types
 
 The common `Model` type shared by all the MCMC routines is handy as it has 
@@ -378,8 +407,8 @@ algorithms on the Bayesian logit model with Normal prior:
 
 Each of the 6 MCMC routines return 2 `Float64` arrays with 
 `opts.mcmc.nPostBurnin` rows and `model.nPars` columns each. The `mcmc` array 
-holds the MCMC chains, while the `z` array holds the zero variance control 
-variates, i.e. minus half the gradient of the log-target.
+holds the simulated MCMC chains, while the `z` array holds the zero variance 
+control variates, i.e. minus half the gradient of the log-target.
 
 ### Calling the zero variance routines
 
@@ -405,5 +434,8 @@ coefficients of the underlying quadratic polynomial of the zero variance method.
 
 ## Future features
 
-The package is extended in order to allow usage of the MCMC routines with ODE 
-models.
+The GeometricMCMC package is being extended to include
+* Bayesian probit model,
+* models of ordinary differential equations(ODE),
+* usage of the MCMC routines when the model's functions are not known in close 
+form.
