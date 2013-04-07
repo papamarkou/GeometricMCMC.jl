@@ -1,5 +1,5 @@
-## Run Metropolis-Hastings using a Bayesian logit model with a normal Prior 
-## N(0, aI) on the Swiss banknote data
+## Run Metropolis-Hastings using a Bayesian logit model with a Normal prior 
+## N(0, priorVar*I) on the Swiss banknote data
 using Test
 using GeometricMCMC
 

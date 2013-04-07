@@ -1,4 +1,4 @@
-# Functions for Bayesian logit model with a normal Prior N(0, aI)
+# Functions for Bayesian logit model with a Normal prior N(0, priorVar*I)
 
 function logPrior(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
   return (-dot(pars,pars)/data["priorVar"]

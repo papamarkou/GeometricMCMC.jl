@@ -139,11 +139,11 @@ into the `test` directory and run the `test/swiss.jl` script:
 
 #### Defining the functions of the `Model`
 
-# Functions for Bayesian logit model with a normal Prior N(0, aI)
-
 Having defined the `data` dictionary as above, `src/logitNormalPrior.jl` 
 provides the functions of the Bayesian logit model:
 
+    # Functions for Bayesian logit model with a Normal prior N(0, priorVar*I)
+    
     function logPrior(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
       return (-dot(pars,pars)/data["priorVar"]
         -nPars*log(2*pi*data["priorVar"]))/2
