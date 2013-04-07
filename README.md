@@ -272,22 +272,22 @@ the following values are available as accessible as members of `MhOpts`:
 
 <table>
   <tr>
-    <th></th><th>`mhOpts` member</th><th>Value</th>
+    <th></th><th>mhOpts's member</th><th>Value</th>
   </tr>
   <tr>
-    <td>1</td><td>`mhOpts.mcmc.n`</td><td>55000</td>
+    <td>1</td><td>mhOpts.mcmc.n</td><td>55000</td>
   </tr>
   <tr>
-    <td>2</td><td>`mhOpts.mcmc.Burnin`</td><td>5000</td>
+    <td>2</td><td>mhOpts.mcmc.Burnin</td><td>5000</td>
   </tr>
   <tr>
-    <td>3</td><td>`mhOpts.mcmc.nPostBurnin`</td><td>50000</td>
+    <td>3</td><td>mhOpts.mcmc.nPostBurnin</td><td>50000</td>
   </tr>
   <tr>
-    <td>4</td><td>`mhOpts.mcmc.monitorRate`</td><td>100</td>
+    <td>4</td><td>mhOpts.mcmc.monitorRate</td><td>100</td>
   </tr>
   <tr>
-    <td>5</td><td>`widthCorrection`</td><td>0.1</td>
+    <td>5</td><td>mhOpts.widthCorrection</td><td>0.1</td>
   </tr>
 </table>
 
@@ -295,6 +295,33 @@ If a monitorRate other than the default of 100 is desired, say 200, then it
 can be passed as the third argument to the constructor of `MhOpts`:
 
     mhOpts = MhOpts(55000, 5000, 200, 0.1);
+
+In a similar way, the type `MalaOpts` holds the options of the MALA algorithm,
+which include `McmcOpts` and the `driftStep`. MALA's driftStep can be either a 
+constant real number or a function with signature
+
+    myDriftStep((currentIter::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, currentStep::Float64)
+
+which adjusts and returns the driftStep during burnin on the basis of the 
+current value of the acceptance ratio. `srt/setStep.jl` contains auxiliary 
+functions to assist the user setting up a function for adjusting the drift step 
+during burnin. Without elaborating in full detail, if the user wants to user 
+the available auxiliary `setMalaDriftStep` function, he needs only to define a 
+vector of 10 drift steps. The first value of the vector is the one empirically 
+considered to be reasonable. If the resulting acceptance ratio is too low or to 
+high for MALA, then the second drift step of the vector is used, which is 
+expected to be rather small. The successive steps of the vector should be 
+increasing at a pace that brings the acceptance ratio to the desired levels. 
+Apparently, defining appropriate numerical values for the 10 drift steps of the 
+vector is a trial-and-error process. `test/logitNormalPriorSwissMh.jl` gives an
+example of how to define the drift steps and subsequently how to invoke the 
+`setMalaDriftStep` function:
+
+    driftSteps = [1, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.25]
+    
+    setDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
+      nBurnin::Int, currentStep::Float64) =
+      setMalaDriftStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, driftSteps)
 
 ## Future features
 
