@@ -69,7 +69,9 @@ to be equal to the log-target and the improper log-prior to be zero.
 
 For ease of use, all the user-defined functions in the Model type share the 
 same signature
+
     functionName(pars, nPars, data)
+
 where `pars` are the model's parameters simulated by the MCMC algorithm and 
 thus not needed to be numerically specified by the user, `nPars` is the number 
 of parameters and `data` is an Array `Array{Any}` or a dictionary `Dict{Any, 
