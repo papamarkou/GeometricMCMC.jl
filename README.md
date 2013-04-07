@@ -215,8 +215,7 @@ to instantiate `Model` with a single command. For example,
 `test/logitNormalPriorSwissRmhmc.jl` demosntrates how to create an instance of 
 `Model` so as to run RMHMC:
 
-    model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior,
-      tensor, derivTensor, randPrior);
+    model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, tensor, derivTensor, randPrior);
 
 As shown in `test/logitNormalPriorSwissMmala.jl`, the same `Model` 
 instantiation is used for MMALA. In fact, the same command invocation suffices 
