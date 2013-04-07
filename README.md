@@ -246,7 +246,7 @@ are not required if there is no intention to run RMHMC or MMALA.
 The common `Model` type shared by all the MCMC routines is handy as it has 
 become clear from the tutorial. On the other hand, the options of each MCMC
 algorithm are obviously specific to the algorithm. The only generic set of 
-common MCMC options are  total number of MCMC iterations `n`, the number of 
+common MCMC options are  the total number of MCMC iterations `n`, the number of 
 burnin iterations `nBurnin` and the monitor rate `monitorRate`, which is the 
 number of successive iterations for which the acceptance ratio is calculated. 
 It is therefore natural to gather `n`, `nBurnin` and `monitorRate` in the 
@@ -260,6 +260,41 @@ each MCMC routine. Therefore, the Metropolis-Hastings `MhOpts` type consists of
 adjusting the proposal's standard deviation when the acceptance ratio is 
 outside the [20%, 60%] acceptance ratio band. An empirically reasonable value 
 for `widthCorrection` is `0.1` for example.
+
+The user does not need to initialize `McmcOpts` separately, since the 
+constructor of the options type of each MCMC routine invokes the constructor of 
+`McmcOpts`. As it can be seen in `test/logitNormalPriorSwissMh.jl` for example,
+
+    mhOpts = MhOpts(55000, 5000, 0.1);
+
+creates an instance of the Metropolis-Hastings `MhOpts` type. This means that 
+the following values are available as accessible as members of `MhOpts`:
+
+<table>
+  <tr>
+    <th></th><th>`mhOpts` member</th><th>Value</th>
+  </tr>
+  <tr>
+    <td>1</td><td>`mhOpts.mcmc.n`</td><td>55000</td>
+  </tr>
+  <tr>
+    <td>2</td><td>`mhOpts.mcmc.Burnin`</td><td>5000</td>
+  </tr>
+  <tr>
+    <td>3</td><td>`mhOpts.mcmc.nPostBurnin`</td><td>50000</td>
+  </tr>
+  <tr>
+    <td>4</td><td>`mhOpts.mcmc.monitorRate`</td><td>100</td>
+  </tr>
+  <tr>
+    <td>5</td><td>`widthCorrection`</td><td>0.1</td>
+  </tr>
+</table>
+
+If a monitorRate other than the default of 100 is desired, say 200, then it 
+can be passed as the third argument to the constructor of `MhOpts`:
+
+    mhOpts = MhOpts(55000, 5000, 200, 0.1);
 
 ## Future features
 
