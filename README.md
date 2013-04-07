@@ -63,10 +63,11 @@ is also possible to accommodate simpler statistical models, such a non-Bayesian
 log-target. This can be achieved, for instance, by setting the log-likelihood 
 to be equal to the log-target and the improper log-prior to be zero.
 
-For ease of use, all the user-defined functions in the Model type share the 
-same signature
+For ease of use, all the user-defined functions in the Model type (apart 
+from the ones starting with "rand" as explained later in the tutorial) 
+conventionally share the same signature
 
-    function myFunction(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+    function myFunction(pars::Vector{Float64}, nPars::Int, data::Union(Array{Any}, Dict{Any, Any}))
 
 where `pars` are the model's parameters simulated by the MCMC algorithm and 
 thus not needed to be numerically specified by the user, `nPars` is the number 
@@ -137,7 +138,55 @@ into the `test` directory and run the `test/swiss.jl` script:
     data = {"X"=>X, "y"=>y, "priorVar"=>100., "nData"=>nData};
 
 #### Defining the functions of the `Model`
+
+# Functions for Bayesian logit model with a normal Prior N(0, aI)
+
+Having defined the `data` dictionary as above, `src/logitNormalPrior.jl` 
+provides the functions of the Bayesian logit model:
+
+    function logPrior(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+      return (-dot(pars,pars)/data["priorVar"]
+        -nPars*log(2*pi*data["priorVar"]))/2
+    end
+
+    function logLikelihood(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+      XPars = data["X"]*pars
+      return (XPars'*data["y"]-sum(log(1+exp(XPars))))[1]
+    end
+
+    function gradLogPosterior(pars::Vector{Float64}, nPars::Int,
+      data::Dict{Any, Any})
+      return (data["X"]'*(data["y"]-1./(1+exp(-data["X"]*pars)))
+        -pars/data["priorVar"])
+    end
+
+    function tensor(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+      p = 1./(1+exp(-data["X"]*pars))
+      return ((data["X"]'.*repmat((p.*(1-p))', nPars, 1))*data["X"]
+        +(eye(nPars)/data["priorVar"]))
+    end
+
+    function derivTensor(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+      matrix = Array(Float64, data["nData"], nPars)
+      output = Array(Float64, nPars, nPars, nPars)
+  
+      p = 1./(1+exp(-data["X"]*pars))
+  
+      for i = 1:nPars
+        for j =1:nPars
+          matrix[:, j] = data["X"][:, j].*((p.*(1-p)).*((1-2*p).*data["X"][:, i]))
+        end
     
+        output[:, :, i] = matrix'*data["X"]
+      end
+      
+      return output
+    end
+    
+    function randPrior(nPars::Int, data::Dict{Any, Any})
+      return rand(Normal(0.0, sqrt(data["priorVar"])), nPars)
+    end
+
 ### The MCMC option types
 
 Coming soon.
