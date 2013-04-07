@@ -87,6 +87,8 @@ instantiation only for MMALA or RMHMC simulations.
 
 ### An example: the Bayesian logit model with Normal prior
 
+#### Creating the `data` member of the `Model` type
+
 To illustrate how to create a Bayesian `Model`, the logit regression with a 
 Normal prior is considered. The data are then the design matrix `X`, with 
 `nData` rows and `nPars` columns, and the binary esponse variable `y`, which is 
@@ -134,6 +136,8 @@ into the `test` directory and run the `test/swiss.jl` script:
     # Create data dictionary
     data = {"X"=>X, "y"=>y, "priorVar"=>100., "nData"=>nData};
 
+#### Defining the functions of the `Model`
+    
 ### The MCMC option types
 
 Coming soon.
