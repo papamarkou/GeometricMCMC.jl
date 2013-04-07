@@ -317,7 +317,7 @@ vector is a trial-and-error process. `test/logitNormalPriorSwissMala.jl` gives
 an example of how to define the drift steps and subsequently how to invoke the 
 `setMalaDriftStep` function:
 
-    driftSteps = [1, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.25]
+    driftSteps = [1, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.25];
     
     setDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
       nBurnin::Int, currentStep::Float64) =
@@ -330,20 +330,38 @@ Then the `MalaOpts` type, holding the MALA options, is instantiated as
 The `SmmalaOpts` and `MmalaOpts` types for SMMALA and MMALA, respectively, are 
 aliases of the `MalaOpts` type.
 
-In short `MhOpts` holds the options for HMC. These include `McmcOpts`, the 
+In short, `MhOpts` holds the options for HMC. These include `McmcOpts`, the 
 number of leapfrog steps `nLeaps`, the mass matrix `mass` and the leapfrog 
-step, which can either be specified as a constant real number or as a function 
+step, which can be specified either as a constant real number or as a function 
 that adjusts the leapfrog step, similarly to the MALA mechanism for adjusting 
 the drift step. An example of setting up the HMC options is available in 
 `test/logitNormalPriorSwissHmc.jl`:
 
-    leapSteps = [0.4, 1e-3/2, 1e-3, 1e-2, 1e-1, 0.15, 0.2, 0.25, 0.3, 0.35]
+    leapSteps = [0.4, 1e-3/2, 1e-3, 1e-2, 1e-1, 0.15, 0.2, 0.25, 0.3, 0.35];
     
     setLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
       nBurnin::Int, currentStep::Float64) =
       setHmcLeapStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, leapSteps)
     
     hmcOpts = HmcOpts(55000, 5000, 10, setLeapStep, eye(nPars));
+
+where 10 corresponds to `nLeaps` and `eye(nPars)` to `mass`.
+
+The `RmhmcOpts` options type of RMHMC includes `McmcOpts`, the number of 
+leapfrog steps `nLeaps`, the number of Newton steps `nNewton` and the leapfrog 
+step, which is either a constant real or it is tuned similarly to HMC's 
+leapfrog step. `test/logitNormalPriorSwissHmc.jl` provides an example for 
+setting up the RMHMC options:
+
+    leapSteps = [0.9, 0.01, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+
+    setLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
+      nBurnin::Int, currentStep::Float64) =
+      setRmhmcLeapStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, leapSteps)
+
+    rmhmcOpts = RmhmcOpts(55000, 5000, 6, setLeapStep, 4);
+
+where 6 corresponds to `nLeaps` and 4 to `nNewton`.
 
 ## Future features
 
