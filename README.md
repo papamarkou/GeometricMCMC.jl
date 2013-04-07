@@ -407,14 +407,14 @@ algorithms on the Bayesian logit model with Normal prior:
 
 Each of the 6 MCMC routines return 2 `Float64` arrays with 
 `opts.mcmc.nPostBurnin` rows and `model.nPars` columns each. The `mcmc` array 
-holds the simulated MCMC chains, while the `z` array holds the zero variance 
+holds the simulated MCMC chains, while the `z` array holds the zero-variance 
 control variates, i.e. minus half the gradient of the log-target.
 
-### Calling the zero variance routines
+### Calling the zero-variance routines
 
 The `mcmc` and `z` arrays can be passed as arguments to the `linearZv` or 
-`quadraticZv` functions in order to compute the linear or the quadratic zero 
-variance Bayesian estimators:
+`quadraticZv` functions in order to compute the linear or the quadratic
+zero-variance Bayesian estimators:
 
     linearZvMcmc, linearCoef = linearZv(mcmc, z);
     quadraticZvMcmc, quadraticCoef = quadraticZv(mcmc, z);
@@ -423,14 +423,14 @@ variance Bayesian estimators:
 above, has `opts.mcmc.nPostBurnin` rows and `model.nPars` columns and holds the 
 linear ZV-MCMC estimators. The second array, saved in `linearCoef`, has 
 `model.nPars` rows and `model.nPars` columns. `linearCoef` contains the 
-coefficients of the linear polynomial upon which the zero variance approach 
+coefficients of the linear polynomial upon which the zero-variance approach 
 relies.
 
 In a similar fashion, `quadraticZv` returns 2 `Float64` arrays, the first of 
 which has `opts.mcmc.nPostBurnin` rows and `model.nPars` columns and holds the 
 quadratic ZV-MCMC estimators. The second array has 
 `model.nPars*(model.nPars+3)/2` rows and `model.nPars` columns, containing the 
-coefficients of the underlying quadratic polynomial of the zero variance method.
+coefficients of the underlying quadratic polynomial of the zero-variance method.
 
 ## Future features
 
