@@ -208,7 +208,7 @@ Besides, once the functions are passed to `Model`, then they are invoked with
 fewer arguments as members of the instantiated `Model`, so the interface remains 
 simple.
 
-#### Creating instance of `Model`
+#### Creating an instance of `Model`
 
 Once the `data` and the functions of `Model` are defined, it is straightforward 
 to instantiate `Model` with a single command. For example, 
@@ -228,8 +228,7 @@ In order to make `Model` more user friendly, it is possible to shorten the
 metric tensor are not needed when running SMMALA. This is why `derivTensor` is 
 omitted in `test/logitNormalPriorSwissSmmala.jl` in the `model` definition:
 
-    model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior,
-      tensor, randPrior);
+    model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, tensor, randPrior);
 
 As a second example, the `tensor` function is not needed when running 
 Metropolis-Hastings, MALA or HMC. For this reason, both `tensor` and 
@@ -238,11 +237,10 @@ definition in `test/logitNormalPriorSwissMh.jl`,
 `test/logitNormalPriorSwissMala.jl` and`test/logitNormalPriorSwissHmc.jl`
 takes the more succinct form
 
-    model =
-      Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
+    model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
 
 Apparently, the corresponding function definitions `tensor` and `derivTensor` 
-are not required, if there is no intention to run RMHMC or MMALA.
+are not required if there is no intention to run RMHMC or MMALA.
       
 ### The MCMC option types
 
