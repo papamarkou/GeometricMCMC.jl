@@ -105,6 +105,35 @@ deduced by `size(X, 1)`. It is however more efficient to pass `nData` to the
 `data` dictionary, given that a typical MCMC simulation invokes the `Model` 
 functions thousands of times.
 
+As a concrete example, `test/swiss.txt` contains the Swiss banknotes dataset. 
+The dataset holds the measurements of 4 covariates on 200 Swiss banknotes, 
+of which 100 genuine and 100 counterfeit, representing the length of the bill, 
+the width of the left and the right edge, and the bottom margin width. 
+Therefore, the design matrix `X` has 200 rows and 4 columns, and the 4 
+regression coefficients constitute the model parameters to be estimated. The 
+binary response variable `y` is the type of banknote, 0 being genuine and 1 
+counterfeit. To create the `data` dictionary for the Swiss banknotes, change 
+into the `test` directory and run the `test/swiss.jl` script:
+
+    # Create design matrix X and response variable y from swiss data array
+    swiss = readdlm("swiss.txt", ' ');
+    covariates = swiss[:, 1:end-1];
+    nData, nPars = size(covariates);
+
+    covariates = (bsxfun(-, covariates, mean(covariates, 1))
+    ./repmat(std(covariates, 1), nData, 1));
+
+    polynomialOrder = 1;
+    X = zeros(nData, nPars*polynomialOrder);
+    for i = 1:polynomialOrder
+      X[:, ((i-1)*nPars+1):i*nPars] = covariates.^i;
+    end
+
+    y = swiss[:, end];
+    
+    # Create data dictionary
+    data = {"X"=>X, "y"=>y, "priorVar"=>100., "nData"=>nData};
+
 ### The MCMC option types
 
 Coming soon.
