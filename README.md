@@ -38,14 +38,25 @@ the logit model with a Normal prior is provided to demonstrate usage and to
 follow through the tutorial.
 
 To invoke each of the MCMC methods of the package, it is required to provide 
-two input arguments. The first argument is an instance of the Model type, 
+two input arguments. The first argument is an instance of the `Model` type, 
 defined in the package, and is common across all 6 MCMC routines. The second 
 argument is an instance of the algorithm's options type and is specific to the 
 algorithm.
 
 ### The Model type
 
-Coming soon.
+The `Model` type provides the statistical model to the MCMC routines. This 
+includes the functions defining the model, the number of the model's parameters 
+and the data.
+
+More specifically, the functions required for defining the model are the 
+log-prior, the log-likelihood, the gradient of the log-posterior, the 
+position-specific metric tensor of the Riemannian manifold of the parameter 
+space and the tensor's partial derivatives with respect to each of the 
+parameters. These functions need to be known in closed form as the package 
+stands so far. The log-posterior is also one of the model's functions and it 
+does not need to be specified by the user, since the `Model` type sets it to be 
+the sum of the log-likelihood with the log-prior.
 
 ### The MCMC option types
 
