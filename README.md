@@ -30,10 +30,6 @@ More details for the geometric MCMC methods of the package can be found in [this
 
 Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions for the computation of the zero-variance (ZV) Monte Carlo Bayesian estimators, see [this publication](http://link.springer.com/article/10.1007%2Fs11222-012-9344-6).
 
-## Installation
-
-
-
 ## Tutorial
 
 This file serves as a tutorial explaining how to use the MCMC routines of the 
@@ -89,7 +85,7 @@ HMC. SMMALA requires additionally the metric tensor. The partial derivatives of
 the metric tensor with respect to the parameters are needed in the `Model` 
 instantiation only for MMALA or RMHMC simulations.
 
-## An example: the Bayesian logit model with Normal prior
+### An example: the Bayesian logit model with Normal prior
 
 ### The MCMC option types
 
