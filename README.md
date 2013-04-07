@@ -78,7 +78,7 @@ Metropolis-Hastings function `mh` requires only the log-prior, log-likelihood
 and the gradient of the log-posterior. In fact, the gradient of the 
 log-posterior is not necessary for running a Metropolis-Hastings MCMC 
 simulation. Nevertheless, it has been set as a required argument so that `mh` 
-returns the zero-variance control variates along with the MCMC output. 
+returns the zero-variance control variates along with the MCMC output.
 Similarly, the log-prior, log-likelihood and the gradient of the log-posterior 
 suffice as arguments in the instantiation of `Model` in order to run MALA or 
 HMC. SMMALA requires additionally the metric tensor. The partial derivatives of 
@@ -86,6 +86,24 @@ the metric tensor with respect to the parameters are needed in the `Model`
 instantiation only for MMALA or RMHMC simulations.
 
 ### An example: the Bayesian logit model with Normal prior
+
+To illustrate how to create a Bayesian `Model`, the logit regression with a 
+Normal prior is considered. The data are then the design matrix `X`, with 
+`nData` rows and `nPars` columns, and the binary esponse variable `y`, which is 
+a vector with `nData` elements. `nData` and`nPars` are the number of data 
+points and the number of parameters respectively. Assuming a standard normal 
+prior N(0, priorVar*I), the prior's variance `priorVar` is also part of the 
+data, in the broad sense of the word.
+
+It is up to the user's preference whether to define `data` as `Array{Any}` or a 
+dictionary `Dict{Any, Any}`, as long as `data` is manipulated accordingly in 
+the subsequent definition of the `Model` functions. In what follows, `data` is 
+introduced as a dictionary, holding the design matrix `X`, the response 
+variable `y`, the prior variance `priorVar` and the number of data points 
+`nData`. Strictly speaking, `nData` is not a requirement, since it can be 
+deduced by `size(X, 1)`. It is however more efficient to pass `nData` to the 
+`data` dictionary, given that a typical MCMC simulation invokes the `Model` 
+functions thousands of times.
 
 ### The MCMC option types
 
