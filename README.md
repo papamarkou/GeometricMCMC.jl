@@ -70,15 +70,26 @@ to be equal to the log-target and the improper log-prior to be zero.
 For ease of use, all the user-defined functions in the Model type share the 
 same signature
 
-    function myfunction(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
+    function myFunction(pars::Vector{Float64}, nPars::Int, data::Dict{Any, Any})
 
 where `pars` are the model's parameters simulated by the MCMC algorithm and 
 thus not needed to be numerically specified by the user, `nPars` is the number 
 of parameters and `data` is an Array `Array{Any}` or a dictionary `Dict{Any, 
 Any}` holding the data.
 
-The Model can be instantiated with fewer arguments. For instance, the 
-Metropolis-Hastings function `mh`
+The Model can be instantiated with fewer arguments. For instance, the
+Metropolis-Hastings function `mh` requires only the log-prior, log-likelihood 
+and the gradient of the log-posterior. In fact, the gradient of the 
+log-posterior is not necessary for running a Metropolis-Hastings MCMC 
+simulation. Nevertheless, it has been set as a required argument so that `mh` 
+returns the zero-variance control variates along with the MCMC output. 
+Similarly, the log-prior, log-likelihood and the gradient of the log-posterior 
+suffice as arguments in the instantiation of `Model` in order to run MALA or 
+HMC. SMMALA requires additionally the metric tensor. The partial derivatives of 
+the metric tensor with respect to the parameters are needed in the `Model` 
+instantiation only for MMALA or RMHMC simulations.
+
+## An example: the Bayesian logit model with Normal prior
 
 ### The MCMC option types
 
