@@ -187,6 +187,27 @@ provides the functions of the Bayesian logit model:
       return rand(Normal(0.0, sqrt(data["priorVar"])), nPars)
     end
 
+There are two rules to bare in mind when defining the functions of the model. 
+The first rule is to use the reserved names `logPrior`, `logLikelihood`, 
+`gradLogPosterior`, `tensor`, `derivTensor` and `randPrior` in the relevant 
+function definitions. The second rule is to adhere to the signature
+
+    function myFunction(pars::Vector{Float64}, nPars::Int, data::Union(Array{Any}, Dict{Any, Any}))
+
+for the deterministic functions of the model, and to the signature
+
+    function myFunction(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}))
+
+for the stochastic function `randPrior`.
+
+The second argument `nPars` to the model's functions seems redundant, since it 
+can be derived from the first argument `pars` via the `size(pars, 1)` command. 
+Nevertheless, it is more efficient practice to pass `nPars` as an argument, 
+given that the number of times the functions are invoked in a single MCMC run. 
+Besides, once the functions are passed to `Model`, then they are invoked with 
+fewer arguments as members of the instantiated `Model`, so the interface 
+remains simple.
+
 ### The MCMC option types
 
 Coming soon.
