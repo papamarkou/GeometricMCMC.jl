@@ -30,6 +30,10 @@ More details for the geometric MCMC methods of the package can be found in [this
 
 Furthermore, the package provides the `linearZV()` and `quadraticZV()` functions for the computation of the zero-variance (ZV) Monte Carlo Bayesian estimators, see [this publication](http://link.springer.com/article/10.1007%2Fs11222-012-9344-6).
 
+## Installation
+
+
+
 ## Tutorial
 
 This file serves as a tutorial explaining how to use the MCMC routines of the 
@@ -43,7 +47,7 @@ defined in the package, and is common across all 6 MCMC routines. The second
 argument is an instance of the algorithm's options type and is specific to the 
 algorithm.
 
-### The Model type
+### The `Model` type
 
 The `Model` type provides the statistical model to the MCMC routines. This 
 includes the functions defining the model, the number of the model's parameters 
@@ -57,6 +61,22 @@ parameters. These functions need to be known in closed form as the package
 stands so far. The log-posterior is also one of the model's functions and it 
 does not need to be specified by the user, since the `Model` type sets it to be 
 the sum of the log-likelihood with the log-prior.
+
+It is apparent that the `Model` type represents a Bayesian model. However, it 
+is also possible to accommodate simpler statistical models, such a non-Bayesian 
+log-target. This can be achieved, for instance, by setting the log-likelihood 
+to be equal to the log-target and the improper log-prior to be zero.
+
+For ease of use, all the user-defined functions in the Model type share the 
+same signature
+    functionName(pars, nPars, data)
+where `pars` are the model's parameters simulated by the MCMC algorithm and 
+thus not needed to be numerically specified by the user, `nPars` is the number 
+of parameters and `data` is an Array `Array{Any}` or a dictionary `Dict{Any, 
+Any}` holding the data.
+
+The Model can be instantiated with fewer arguments. For instance, the 
+Metropolis-Hastings function `mh`
 
 ### The MCMC option types
 
