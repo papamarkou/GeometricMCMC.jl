@@ -297,24 +297,24 @@ can be passed as the third argument to the constructor of `MhOpts`:
     mhOpts = MhOpts(55000, 5000, 200, 0.1);
 
 In a similar way, the type `MalaOpts` holds the options of the MALA algorithm,
-which include `McmcOpts` and the `driftStep`. MALA's driftStep can be either a 
+which include `McmcOpts` and the drift step. MALA's driftStep can be either a 
 constant real number or a function with signature
 
-    myDriftStep((currentIter::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, currentStep::Float64)
+    myDriftStep(currentIter::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, currentStep::Float64)
 
-which adjusts and returns the driftStep during burnin on the basis of the 
-current value of the acceptance ratio. `srt/setStep.jl` contains auxiliary 
+which adjusts and returns the drift step during burnin on the basis of the 
+current value of the acceptance ratio. `src/setStep.jl` contains auxiliary 
 functions to assist the user setting up a function for adjusting the drift step 
-during burnin. Without elaborating in full detail, if the user wants to user 
-the available auxiliary `setMalaDriftStep` function, he needs only to define a 
+during burnin. Without elaborating in full detail, if the user wants to use 
+the available auxiliary `setMalaDriftStep` function, he needs to define only a 
 vector of 10 drift steps. The first value of the vector is the one empirically 
-considered to be reasonable. If the resulting acceptance ratio is too low or to 
-high for MALA, then the second drift step of the vector is used, which is 
+considered to be reasonable. If the resulting acceptance ratio is too low or 
+too high for MALA, then the second drift step of the vector is used, which is 
 expected to be rather small. The successive steps of the vector should be 
 increasing at a pace that brings the acceptance ratio to the desired levels. 
 Apparently, defining appropriate numerical values for the 10 drift steps of the 
-vector is a trial-and-error process. `test/logitNormalPriorSwissMh.jl` gives an
-example of how to define the drift steps and subsequently how to invoke the 
+vector is a trial-and-error process. `test/logitNormalPriorSwissMala.jl` gives 
+an example of how to define the drift steps and subsequently how to invoke the 
 `setMalaDriftStep` function:
 
     driftSteps = [1, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.25]
@@ -322,6 +322,28 @@ example of how to define the drift steps and subsequently how to invoke the
     setDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
       nBurnin::Int, currentStep::Float64) =
       setMalaDriftStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, driftSteps)
+
+Then the `MalaOpts` type, holding the MALA options, is instantiated as
+
+    malaOpts = MalaOpts(55000, 5000, setDriftStep);
+
+The `SmmalaOpts` and `MmalaOpts` types for SMMALA and MMALA, respectively, are 
+aliases of the `MalaOpts` type.
+
+In short `MhOpts` holds the options for HMC. These include `McmcOpts`, the 
+number of leapfrog steps `nLeaps`, the mass matrix `mass` and the leapfrog 
+step, which can either be specified as a constant real number or as a function 
+that adjusts the leapfrog step, similarly to the MALA mechanism for adjusting 
+the drift step. An example of setting up the HMC options is available in 
+`test/logitNormalPriorSwissHmc.jl`:
+
+    leapSteps = [0.4, 1e-3/2, 1e-3, 1e-2, 1e-1, 0.15, 0.2, 0.25, 0.3, 0.35]
+    
+    setLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
+      nBurnin::Int, currentStep::Float64) =
+      setHmcLeapStep(i, acceptanceRatio, nMcmc, nBurnin, currentStep, leapSteps)
+    
+    hmcOpts = HmcOpts(55000, 5000, 10, setLeapStep, eye(nPars));
 
 ## Future features
 
