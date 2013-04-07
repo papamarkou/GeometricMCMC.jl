@@ -243,6 +243,24 @@ are not required if there is no intention to run RMHMC or MMALA.
       
 ### The MCMC option types
 
+The common `Model` type shared by all the MCMC routines is handy as it has 
+become clear from the tutorial. On the other hand, the options of each MCMC
+algorithm are obviously specific to the algorithm. The only generic set of 
+common MCMC options are  total number of MCMC iterations `n`, the number of 
+burnin iterations `nBurnin` and the monitor rate `monitorRate`, which is the 
+number of successive iterations for which the acceptance ratio is calculated. 
+It is therefore natural to gather `n`, `nBurnin` and `monitorRate` in the 
+"base" MCMC type `McmcOpts`. `nPostBurnin` is also a member of `McmcOpts` and 
+it is implicity set by the constructor of `McmcOpts` to be the difference 
+`n-nBurnin`.
+
+`McmcOpts` is in turn member of the other option types, which are specific to 
+each MCMC routine. Therefore, the Metropolis-Hastings `MhOpts` type consists of 
+`McmcOpts` and of the additional `widthCorrection` member, which helps 
+adjusting the proposal's standard deviation when the acceptance ratio is 
+outside the [20%, 60%] acceptance ratio band. An empirically reasonable value 
+for `widthCorrection` is `0.1` for example.
+
 ## Future features
 
 The package is extended in order to allow usage of the MCMC routines with ODE 
