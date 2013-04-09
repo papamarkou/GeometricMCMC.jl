@@ -43,7 +43,7 @@ command prompt so as to use the GeometricMCMC package:
 
     using GeometricMCMC
 
-The `Distributions` package may be needed mostly for sampling from 
+The `Distributions` package may be needed, mostly for sampling from 
 distributions, so it may be useful to make both packages available:
 
     using Distributions, GeometricMCMC
@@ -52,8 +52,8 @@ distributions, so it may be useful to make both packages available:
 
 This file serves as a tutorial explaining how to use the MCMC routines of the 
 package, as well as the `linearZV()` and `quadraticZV()` functions. Code for 
-the logit model with a Normal prior is provided to demonstrate usage and to 
-follow through the tutorial.
+the Bayesian logit model with multivariate uncorrelated zero-mean Normal prior 
+is provided to demonstrate usage and to follow through the tutorial.
 
 To invoke each of the MCMC methods of the package, it is required to provide 
 two input arguments. The first argument is an instance of the `Model` type, 
@@ -93,10 +93,10 @@ of parameters and `data` is an Array `Array{Any}` or a dictionary `Dict{Any,
 Any}` holding the data.
 
 The Model can be instantiated with fewer arguments. For instance, the
-Metropolis-Hastings function `mh` requires only the log-prior, log-likelihood 
+Metropolis-Hastings function `mh()` requires only the log-prior, log-likelihood 
 and the gradient of the log-posterior. In fact, the gradient of the 
 log-posterior is not necessary for running a Metropolis-Hastings MCMC 
-simulation. Nevertheless, it has been set as a required argument so that `mh` 
+simulation. Nevertheless, it has been set as a required argument so that `mh()` 
 returns the zero-variance control variates along with the MCMC output.
 Similarly, the log-prior, log-likelihood and the gradient of the log-posterior 
 suffice as arguments in the instantiation of `Model` in order to run MALA or 
@@ -109,15 +109,15 @@ instantiation only for MMALA or RMHMC simulations.
 #### Creating the `data` member of the `Model` type
 
 To illustrate how to create a Bayesian `Model`, the logit regression with a 
-Normal prior is considered. The data are then the design matrix `X`, with 
-`nData` rows and `nPars` columns, and the binary esponse variable `y`, which is 
-a vector with `nData` elements. `nData` and`nPars` are the number of data 
-points and the number of parameters respectively. Assuming a standard normal 
-prior N(0, priorVar*I), the prior's variance `priorVar` is also part of the 
-data, in the broad sense of the word.
+multivariate uncorrelated zero-mean Normal prior is considered. The data are 
+then the design matrix `X`, with `nData` rows and `nPars` columns, and the 
+binary response variable `y`, which is a vector with `nData` elements. `nData` 
+and`nPars` are the number of data points and the number of parameters, 
+respectively. Assuming a Normal prior N(0, priorVar*I), the prior's variance 
+`priorVar` is also part of the data, in the broad sense of the word.
 
-It is up to the user's preference whether to define `data` as `Array{Any}` or a 
-dictionary `Dict{Any, Any}`, as long as `data` is manipulated accordingly in 
+It is up to the user's preference whether to define `data` as `Array{Any}` or 
+`Dict{Any, Any}`, as long as `data` is manipulated accordingly in 
 the subsequent definition of the `Model` functions. In what follows, `data` is 
 introduced as a dictionary, holding the design matrix `X`, the response 
 variable `y`, the prior variance `priorVar` and the number of data points 
@@ -157,7 +157,7 @@ into the `test` directory and run the `test/swiss.jl` script:
 
 #### Defining the functions of the `Model`
 
-Having defined the `data` dictionary as above, `src/logitNormalPrior.jl` 
+Having defined the `data` dictionary as above, `test/logitNormalPrior.jl` 
 provides the functions of the Bayesian logit model:
 
     # Functions for Bayesian logit model with a Normal prior N(0, priorVar*I)
@@ -205,10 +205,11 @@ provides the functions of the Bayesian logit model:
       return rand(Normal(0.0, sqrt(data["priorVar"])), nPars)
     end
 
-There are two rules to bare in mind when defining the functions of the model. 
-The first rule is to use the reserved names `logPrior`, `logLikelihood`, 
-`gradLogPosterior`, `tensor`, `derivTensor` and `randPrior` in the relevant 
-function definitions. The second rule is to adhere to the signature
+There are two points to bare in mind when defining the functions of the model. 
+Firstly, it is practical, though not obligatory, to use the reserved names 
+`logPrior()`, `logLikelihood()`, `gradLogPosterior()`, `tensor()`, 
+`derivTensor()` and `randPrior()` in the relevant function definitions. 
+Secondly, it is mandatory to adhere to the signature
 
     function myFunction(pars::Vector{Float64}, nPars::Int, data::Union(Array{Any}, Dict{Any, Any}))
 
@@ -216,7 +217,7 @@ for the deterministic functions of the model, and to the signature
 
     function myFunction(nPars::Int, data::Union(Array{Any}, Dict{Any, Any}))
 
-for the stochastic function `randPrior`.
+for the stochastic function `randPrior()`.
 
 The second argument `nPars` to the model's functions seems redundant, since it 
 can be derived from the first argument `pars` via the `size(pars, 1)` command. 
@@ -242,22 +243,22 @@ algorithms of the GeometricMCMC package.
 
 In order to make `Model` more user friendly, it is possible to shorten the 
 `Model` invocation in some cases. For example, the partial derivatives of the 
-metric tensor are not needed when running SMMALA. This is why `derivTensor` is 
-omitted in `test/logitNormalPriorSwissSmmala.jl` in the `model` definition:
+metric tensor are not needed when running SMMALA. This is why `derivTensor()` 
+is omitted in `test/logitNormalPriorSwissSmmala.jl` in the `model` definition:
 
     model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, tensor, randPrior);
 
-As a second example, the `tensor` function is not needed when running 
-Metropolis-Hastings, MALA or HMC. For this reason, both `tensor` and 
-`derivTensor` can be left out at `Model` instantiation. So, the `model` 
+As a second example, the `tensor()` function is not needed when running 
+Metropolis-Hastings, MALA or HMC. For this reason, both `tensor()` and 
+`derivTensor()` can be left out at `Model` instantiation. So, the `model` 
 definition in `test/logitNormalPriorSwissMh.jl`, 
 `test/logitNormalPriorSwissMala.jl` and`test/logitNormalPriorSwissHmc.jl`
 takes the more succinct form
 
     model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
 
-Apparently, the corresponding function definitions `tensor` and `derivTensor` 
-are not required if there is no intention to run RMHMC or MMALA.
+Apparently, the corresponding function definitions `tensor()` and 
+`derivTensor()` are not required if there is no intention to run RMHMC or MMALA.
 
 Although the functions in the `model` instance are meant to be invoked 
 internally by the MCMC functions, they are also available at the disposal of 
@@ -302,7 +303,7 @@ constructor of the options type of each MCMC routine invokes the constructor of
     mhOpts = MhOpts(55000, 5000, 0.1);
 
 creates an instance of the Metropolis-Hastings `MhOpts` type. This means that 
-the following values are available as accessible as members of `MhOpts`:
+the following values are accessible as members of `MhOpts`:
 
 <table>
   <tr>
@@ -331,7 +332,7 @@ can be passed as the third argument to the constructor of `MhOpts`:
     mhOpts = MhOpts(55000, 5000, 200, 0.1);
 
 In a similar way, the type `MalaOpts` holds the options of the MALA algorithm,
-which include `McmcOpts` and the drift step. MALA's driftStep can be either a 
+which include `McmcOpts` and the drift step. MALA's drift step can be either a 
 constant real number or a function with signature
 
     myDriftStep(currentIter::Int, acceptanceRatio::Float64, nMcmc::Int, nBurnin::Int, currentStep::Float64)
@@ -384,7 +385,7 @@ where 10 corresponds to `nLeaps` and `eye(nPars)` to `mass`.
 The `RmhmcOpts` options type of RMHMC includes `McmcOpts`, the number of 
 leapfrog steps `nLeaps`, the number of Newton steps `nNewton` and the leapfrog 
 step, which is either a constant real or it is tuned similarly to HMC's 
-leapfrog step. `test/logitNormalPriorSwissHmc.jl` provides an example for 
+leapfrog step. `test/logitNormalPriorSwissRmhmc.jl` provides an example for 
 setting up the RMHMC options:
 
     leapSteps = [0.9, 0.01, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
@@ -401,7 +402,8 @@ where 6 corresponds to `nLeaps` and 4 to `nNewton`.
 
 With the `Model` and MCMC option types instantiated, the MCMC routines can be 
 called with a single command. Here are the examples for running all 6 MCMC 
-algorithms on the Bayesian logit model with Normal prior:
+algorithms on the Bayesian logit model with multivariate uncorrelated zero-mean 
+Normal prior:
 
     mcmc, z = mh(model, mhOpts);
     mcmc, z = mala(model, malaOpts);
@@ -417,30 +419,44 @@ control variates, i.e. minus half the gradient of the log-target.
 
 ### Calling the zero-variance routines
 
-The `mcmc` and `z` arrays can be passed as arguments to the `linearZv` or 
-`quadraticZv` functions in order to compute the linear or the quadratic
+The `mcmc` and `z` arrays can be passed as arguments to the `linearZv()` or 
+`quadraticZv()` functions in order to compute the linear or the quadratic
 zero-variance Bayesian estimators:
 
     linearZvMcmc, linearCoef = linearZv(mcmc, z);
     quadraticZvMcmc, quadraticCoef = quadraticZv(mcmc, z);
 
-`linearZv` returns 2 `Float64` arrays. The first one, saved in `linearZvMcmc` 
+`linearZv()` returns 2 `Float64` arrays. The first one, saved in `linearZvMcmc` 
 above, has `opts.mcmc.nPostBurnin` rows and `model.nPars` columns and holds the 
 linear ZV-MCMC estimators. The second array, saved in `linearCoef`, has 
 `model.nPars` rows and `model.nPars` columns. `linearCoef` contains the 
 coefficients of the linear polynomial upon which the zero-variance approach 
 relies.
 
-In a similar fashion, `quadraticZv` returns 2 `Float64` arrays, the first of 
+In a similar fashion, `quadraticZv()` returns 2 `Float64` arrays, the first of 
 which has `opts.mcmc.nPostBurnin` rows and `model.nPars` columns and holds the 
 quadratic ZV-MCMC estimators. The second array has 
 `model.nPars*(model.nPars+3)/2` rows and `model.nPars` columns, containing the 
 coefficients of the underlying quadratic polynomial of the zero-variance method.
 
+The Bayesian probit model with multivariate uncorrelated zero-mean Normal is 
+also available in the `test` directory, accompanied by the scripts for running 
+all 6 MCMC algorithms on the vasoconstriction dataset. The data come from an 
+experiment conducted on human physiology to study the effect of taking a single 
+deep breath on the occurrence of a reflex vasoconstriction in the skin of the 
+digits. 39 samples from three individuals are available, each of them 
+contributing 9, 8 and 22 samples. Although the data represent repeated 
+measurements, the observations can be assumed to be independent, therefore the 
+Bayesian probit model can be applied. Two explanatory variables are included in 
+the study, namely the rate of inhalation and the inhaled volume of air per 
+individual. An intercept is also added, so 3 regression coefficients comprise 
+the parameters of the model. The occurrence or non-occurrence of 
+vasoconstriction in the skin of the digits of each subject, corresponding to 1 
+and 0, plays the role of the binary response.
+
 ## Future features
 
 The GeometricMCMC package is being extended to include
-* Bayesian probit model,
-* models of ordinary differential equations(ODE),
+* models of ordinary differential equations (ODEs),
 * usage of the MCMC routines when the model's functions are not known in closed
 form.
