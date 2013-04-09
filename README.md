@@ -43,8 +43,8 @@ command prompt so as to use the GeometricMCMC package:
 
     using GeometricMCMC
 
-It is likely that the `Distributions` package may be needed mostly for sampling 
-from distributions, so it may be useful to make both packages available:
+The `Distributions` package may be needed mostly for sampling from 
+distributions, so it may be useful to make both packages available:
 
     using Distributions, GeometricMCMC
     
