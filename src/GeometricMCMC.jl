@@ -3,9 +3,10 @@ module GeometricMCMC
   
   require("Distributions")
   using Distributions
-
+  
   include("types.jl")
   include("setStep.jl")
+  include("logOfNormalCdf.jl")
   include("mh.jl")
   include("mala.jl")
   include("smmala.jl")
@@ -14,7 +15,6 @@ module GeometricMCMC
   include("rmhmc.jl")
   include("linearZv.jl")
   include("quadraticZv.jl")
-  include("logitNormalPrior.jl")
   
   export
     ## Types
@@ -44,5 +44,8 @@ module GeometricMCMC
     
     ## Functions for calculating zero-variance estimators
     linearZv, # ZV-MCMC using linear polynomial
-    quadraticZv # ZV-MCMC using quadratic polynomial
+    quadraticZv, # ZV-MCMC using quadratic polynomial
+    
+    ## Function for calculating log of standard Normal cdf more accurately
+    logOfNormalCdf
 end

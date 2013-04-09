@@ -1,17 +1,17 @@
-## Run MALA using a Bayesian logit model with a Normal prior N(0, priorVar*I) 
+## Run MALA using a Bayesian probit model with a Normal prior N(0, priorVar*I) 
 ## on the Swiss banknote data
 using Test
 using Distributions, GeometricMCMC
 
-include("swiss.jl")
-include("logitNormalPrior.jl")
+include("vaso.jl")
+include("probitNormalPrior.jl")
 
 # Create Model instance
 model =
   Model(nPars, data, logPrior, logLikelihood, gradLogPosterior, randPrior);
 
 # Create setDriftStep function for adjusting the drift step of MALA
-driftSteps = [1, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.25]
+driftSteps = [0.25, 1e-8, 1e-7, 1e-6/2, 1e-6, 1e-5/2, 1e-5, 1e-4, 1e-3, 1e-2]
 
 setDriftStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
   nBurnin::Int, currentStep::Float64) =

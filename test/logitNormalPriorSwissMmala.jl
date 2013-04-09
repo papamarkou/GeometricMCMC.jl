@@ -1,9 +1,10 @@
 ## Run MMALA using a Bayesian logit model with a Normal prior N(0, priorVar*I) 
 ## on the Swiss banknote data
 using Test
-using GeometricMCMC
+using Distributions, GeometricMCMC
 
 include("swiss.jl")
+include("logitNormalPrior.jl")
 
 # Create Model instance
 model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior,

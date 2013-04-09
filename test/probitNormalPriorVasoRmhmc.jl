@@ -1,17 +1,17 @@
-## Run RMHMC using a Bayesian logit model with a Normal prior N(0, priorVar*I)
+## Run RMHMC using a Bayesian probit model with a Normal prior N(0, priorVar*I)
 ## on the Swiss banknote data
 using Test
 using Distributions, GeometricMCMC
 
-include("swiss.jl")
-include("logitNormalPrior.jl")
+include("vaso.jl")
+include("probitNormalPrior.jl")
 
 # Create Model instance
 model = Model(nPars, data, logPrior, logLikelihood, gradLogPosterior,
   tensor, derivTensor, randPrior);
 
 # Create setDriftStep function for adjusting the leap step of RMHMC
-leapSteps = [0.9, 0.01, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+leapSteps = [0.725, 0.01, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6]
 
 setLeapStep(i::Int, acceptanceRatio::Float64, nMcmc::Int, 
   nBurnin::Int, currentStep::Float64) =
