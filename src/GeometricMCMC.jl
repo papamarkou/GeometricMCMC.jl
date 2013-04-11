@@ -5,16 +5,15 @@ module GeometricMCMC
   using Distributions
   
   include("types.jl")
+  include("stats.jl")
   include("setStep.jl")
-  include("logOfNormalCdf.jl")
   include("mh.jl")
   include("mala.jl")
   include("smmala.jl")
   include("mmala.jl")
   include("hmc.jl")
   include("rmhmc.jl")
-  include("linearZv.jl")
-  include("quadraticZv.jl")
+  include("zv.jl")
   
   export
     ## Types
@@ -25,6 +24,10 @@ module GeometricMCMC
     MmalaOpts,
     HmcOpts,
     RmhmcOpts,
+
+    ## Various stats functions
+    logOfNormalCdf, # Function for calculating log of std Normal cdf accurately
+    autocov, # Function for calculating the sample autocovariance of a vector
     
     ## Auxiliary step functions
     setStep, # Generic step function
@@ -44,8 +47,5 @@ module GeometricMCMC
     
     ## Functions for calculating zero-variance estimators
     linearZv, # ZV-MCMC using linear polynomial
-    quadraticZv, # ZV-MCMC using quadratic polynomial
-    
-    ## Function for calculating log of standard Normal cdf more accurately
-    logOfNormalCdf
+    quadraticZv # ZV-MCMC using quadratic polynomial
 end

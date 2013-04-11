@@ -1,6 +1,25 @@
+# Function for calculating the sample autocovariance of a vector for lags from 
+# 0 to maxlag, returning a vector of length maxlag+1
+function autocov(sample::Vector{Float64}, maxLag::Int)
+  n = size(sample, 1)
+
+  if n <= maxLag
+    throw("The length of the input vector x must be at least maxlag+1")
+  end
+
+  sample = sample-mean(sample)
+
+  acv = zeros(maxLag+1, 1)
+
+  for i = 0:maxLag
+     acv[i+1] = dot(sample[1:n-i], sample[1+i:n])
+  end
+
+  acv = acv/n
+end
+
 # Function for calculating the standard Normal cumulative density function more 
 # accurately for small values of its argument
-
 function logOfNormalCdf(x::Union(Float64, Vector{Float64}))
 
   c::Float64 = -6.5
