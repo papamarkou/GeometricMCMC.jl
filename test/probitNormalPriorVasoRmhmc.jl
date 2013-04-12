@@ -1,6 +1,6 @@
 ## Run RMHMC using a Bayesian probit model with a Normal prior N(0, priorVar*I)
 ## on the Swiss banknote data
-using Test
+
 using Distributions, GeometricMCMC
 
 include("vaso.jl")

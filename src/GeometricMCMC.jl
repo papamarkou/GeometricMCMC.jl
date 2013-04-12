@@ -28,6 +28,7 @@ module GeometricMCMC
     ## Various stats functions
     logOfNormalCdf, # Function for calculating log of std Normal cdf accurately
     autocov, # Function for calculating the sample autocovariance of a vector
+    imse, # Function for calculating Geyer's initial monotone sequence estimator
     
     ## Auxiliary step functions
     setStep, # Generic step function
