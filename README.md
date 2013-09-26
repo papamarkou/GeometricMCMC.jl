@@ -1,3 +1,5 @@
+_The `GeometricMCMC` package has been deprecated since it has been merged into the `MCMC` package._
+
 ## Overview of package's scope
 
 This package implements the following 6 MCMC algorithms:
